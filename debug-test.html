@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Chat Debug Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: #f9fafb;
+    }
+    .test-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #111827;
+    }
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    .status.pass {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status.fail {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    button {
+      background: #111827;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    button:hover {
+      background: #374151;
+    }
+    .code {
+      background: #1f2937;
+      color: #10b981;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      margin: 0.5rem 0;
+    }
+    .step {
+      padding: 0.75rem;
+      border-left: 3px solid #3b82f6;
+      background: #eff6ff;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+    }
+    .result {
+      padding: 0.75rem;
+      background: #f3f4f6;
+      border-radius: 6px;
+      margin: 0.5rem 0;
+      font-family: monospace;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔧 Admin Chat Functionality Debug Test</h1>
+  
+  <div class="test-section">
+    <h2>Step 1: Clear Browser Cache</h2>
+    <div class="step">
+      Press <strong>Ctrl + Shift + R</strong> to hard refresh, or open admin.html in a new <strong>Incognito/Private</strong> window
+    </div>
+    <button onclick="window.open('http://localhost:8080/admin.html', '_blank')">Open Admin Panel</button>
+    <button onclick="window.open('http://localhost:8080/admin.html', '_blank', 'width=1200,height=800')">Open in New Window</button>
+  </div>
+
+  <div class="test-section">
+    <h2>Step 2: Check Script Versions</h2>
+    <div class="step">
+      Open the admin panel and check the Network tab in DevTools (F12). The scripts should have version <code>?v=20251028-1</code>
+    </div>
+    <div id="versionCheck" class="result">
+      Expected versions:
+      <ul>
+        <li>scripts/admin.js?v=20251028-1</li>
+        <li>scripts/api-client.js?v=20251028-1</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Step 3: Test API Endpoints</h2>
+    <button onclick="testBackend()">Test Backend Connection</button>
+    <button onclick="testChatSessions()">Test Chat Sessions API</button>
+    <button onclick="testChatDetail()">Test Chat Detail API</button>
+    <div id="apiResults" class="result" style="display:none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Step 4: Manual Test Checklist</h2>
+    <div class="step">
+      <strong>1.</strong> Login to admin panel (admin@disputeportal.com / Admin@SecurePass123)
+    </div>
+    <div class="step">
+      <strong>2.</strong> Click the "Chat Sessions" tab
+    </div>
+    <div class="step">
+      <strong>3.</strong> You should see 2 chat sessions in the table
+    </div>
+    <div class="step">
+      <strong>4.</strong> Hover over a row - it should turn light gray
+    </div>
+    <div class="step">
+      <strong>5.</strong> Click on the row with ID starting with "0f38cb59"
+    </div>
+    <div class="step">
+      <strong>6.</strong> A chat detail panel should appear below the table showing 4 messages
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Step 5: Expected Console Output</h2>
+    <div class="step">
+      Open the browser console (F12 → Console) and click a chat session. You should see:
+    </div>
+    <div class="code">
+📋 Rendering 2 chat sessions with click handlers<br>
+🖱️ Chat session clicked: 0f38cb59-7fe8-4578-9e30-10cdce4255e5<br>
+📂 Opening chat detail for session: 0f38cb59-7fe8-4578-9e30-10cdce4255e5<br>
+💬 Session data loaded: {id: "0f38cb59...", messages: [...]}<br>
+📨 Rendering 4 messages<br>
+👁️ Showing chat detail panel<br>
+✅ Chat detail panel should now be visible
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Step 6: Verify DOM Elements</h2>
+    <button onclick="checkDOMElements()">Check DOM Structure</button>
+    <div id="domResults" class="result" style="display:none;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>🎯 Quick Fixes</h2>
+    <div class="step">
+      <strong>If chat detail doesn't appear:</strong>
+      <ol>
+        <li>Check browser console for errors (red text)</li>
+        <li>Verify admin.js version is 20251028-1 (not 20251027)</li>
+        <li>Clear cache completely (Ctrl+Shift+Delete)</li>
+        <li>Try Incognito/Private window</li>
+        <li>Restart the frontend server</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    async function testBackend() {
+      const results = document.getElementById('apiResults');
+      results.style.display = 'block';
+      results.innerHTML = 'Testing backend connection...';
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/health');
+        const data = await response.json();
+        results.innerHTML = `
+          <span class="status pass">✓ PASS</span> Backend is running<br>
+          Response: ${JSON.stringify(data, null, 2)}
+        `;
+      } catch (error) {
+        results.innerHTML = `
+          <span class="status fail">✗ FAIL</span> Backend not responding<br>
+          Error: ${error.message}<br>
+          <strong>Fix:</strong> Start backend with: cd backend && npm run dev
+        `;
+      }
+    }
+
+    async function testChatSessions() {
+      const results = document.getElementById('apiResults');
+      results.style.display = 'block';
+      results.innerHTML = 'Testing chat sessions endpoint (requires auth)...';
+      
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+          results.innerHTML = `
+            <span class="status fail">✗ FAIL</span> Not logged in<br>
+            <strong>Fix:</strong> Login to admin panel first, then run this test
+          `;
+          return;
+        }
+
+        const response = await fetch('http://localhost:5000/api/chat/sessions', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          const sessions = data.data?.items || data.data || [];
+          results.innerHTML = `
+            <span class="status pass">✓ PASS</span> Found ${sessions.length} chat sessions<br>
+            <pre>${JSON.stringify(sessions, null, 2)}</pre>
+          `;
+        } else {
+          results.innerHTML = `
+            <span class="status fail">✗ FAIL</span> API returned error<br>
+            Error: ${data.error}
+          `;
+        }
+      } catch (error) {
+        results.innerHTML = `
+          <span class="status fail">✗ FAIL</span> Request failed<br>
+          Error: ${error.message}
+        `;
+      }
+    }
+
+    async function testChatDetail() {
+      const results = document.getElementById('apiResults');
+      results.style.display = 'block';
+      results.innerHTML = 'Testing chat detail endpoint...';
+      
+      const sessionId = '0f38cb59-7fe8-4578-9e30-10cdce4255e5';
+      
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+          results.innerHTML = `
+            <span class="status fail">✗ FAIL</span> Not logged in<br>
+            <strong>Fix:</strong> Login to admin panel first
+          `;
+          return;
+        }
+
+        const response = await fetch(`http://localhost:5000/api/chat/sessions/${sessionId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          const messages = data.data?.messages || [];
+          results.innerHTML = `
+            <span class="status pass">✓ PASS</span> Loaded chat session with ${messages.length} messages<br>
+            <strong>Session ID:</strong> ${sessionId}<br>
+            <strong>Messages:</strong><br>
+            <pre>${JSON.stringify(messages, null, 2)}</pre>
+          `;
+        } else {
+          results.innerHTML = `
+            <span class="status fail">✗ FAIL</span> API returned error<br>
+            Error: ${data.error}
+          `;
+        }
+      } catch (error) {
+        results.innerHTML = `
+          <span class="status fail">✗ FAIL</span> Request failed<br>
+          Error: ${error.message}
+        `;
+      }
+    }
+
+    function checkDOMElements() {
+      const results = document.getElementById('domResults');
+      results.style.display = 'block';
+      
+      // Try to access admin panel window if open
+      const adminWindow = window.open('http://localhost:8080/admin.html', 'admin-test');
+      
+      if (adminWindow) {
+        setTimeout(() => {
+          try {
+            const doc = adminWindow.document;
+            const chatDetail = doc.getElementById('chatDetail');
+            const chatTableBody = doc.getElementById('chatTableBody');
+            const chatMessagesAdmin = doc.getElementById('chatMessagesAdmin');
+            
+            let html = '';
+            
+            if (chatDetail) {
+              const isHidden = chatDetail.classList.contains('hidden');
+              html += `<span class="status ${isHidden ? 'pass' : 'fail'}">✓</span> chatDetail element exists (hidden: ${isHidden})<br>`;
+            } else {
+              html += `<span class="status fail">✗</span> chatDetail element NOT FOUND<br>`;
+            }
+            
+            if (chatTableBody) {
+              const rowCount = chatTableBody.querySelectorAll('tr').length;
+              html += `<span class="status pass">✓</span> chatTableBody exists (${rowCount} rows)<br>`;
+            } else {
+              html += `<span class="status fail">✗</span> chatTableBody element NOT FOUND<br>`;
+            }
+            
+            if (chatMessagesAdmin) {
+              html += `<span class="status pass">✓</span> chatMessagesAdmin element exists<br>`;
+            } else {
+              html += `<span class="status fail">✗</span> chatMessagesAdmin element NOT FOUND<br>`;
+            }
+            
+            results.innerHTML = html;
+          } catch (e) {
+            results.innerHTML = `
+              <span class="status fail">✗ FAIL</span> Cannot access admin window (cross-origin?)<br>
+              Open admin panel manually and check console
+            `;
+          }
+        }, 2000);
+      } else {
+        results.innerHTML = `
+          <span class="status fail">✗ FAIL</span> Could not open admin window<br>
+          Open admin panel manually at: <a href="http://localhost:8080/admin.html" target="_blank">http://localhost:8080/admin.html</a>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

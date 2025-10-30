@@ -1,0 +1,193 @@
+# ========================================
+# Payment Dispute Portal - Git Ignore
+# ========================================
+
+# ============ SENSITIVE DATA ============
+# Environment Variables (CRITICAL - Contains passwords, API keys)
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+backend/.env
+backend/.env.local
+backend/.env.production
+backend/.env.development
+backend/.env.test
+# But allow .env.example files (these are safe templates)
+!.env.example
+!backend/.env.example
+
+# Database (Contains user data)
+*.db
+*.sqlite
+*.sqlite3
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+backend/src/database/*.json
+dispute-portal.json
+
+# ============ OLD PROJECT FOLDER ============
+# Exclude the old payment-dispute-portal folder
+payment-dispute-portal/
+
+# ============ DEPENDENCIES ============
+# Node modules
+node_modules/
+backend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ============ UPLOADS & USER FILES ============
+# File uploads (may contain sensitive documents)
+uploads/
+backend/uploads/
+*.pdf
+*.docx
+*.xlsx
+*.zip
+!backend/uploads/.gitkeep
+
+# ============ BUILD OUTPUTS ============
+# Compiled JavaScript from TypeScript
+dist/
+build/
+*.js.map
+
+# Compiled frontend scripts (we track source .ts files)
+scripts/*.js
+scripts/*.d.ts
+!scripts/api-client.js
+
+# ============ IDE & EDITOR ============
+# VS Code
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.*.swp
+
+# ============ OPERATING SYSTEM ============
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============ LOGS ============
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# ============ TEMPORARY FILES ============
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+
+# ============ TEST COVERAGE ============
+coverage/
+*.lcov
+.nyc_output/
+
+# ============ DOCUMENTATION & PLANNING ============
+# Exclude all planning and implementation documentation
+# Keep only README.md for repository documentation
+*.md
+!README.md
+
+# ============ MISC ============
+# PM2 (Process Manager)
+.pm2/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Lock files (keep package-lock.json, ignore others)
+yarn.lock
+pnpm-lock.yaml
+
+# ============ SECURITY ============
+# Private keys
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# Backup files
+*.backup
+*.bak
+*.old

@@ -1,0 +1,21 @@
+{
+  "name": "payment-dispute-portal",
+  "version": "1.0.0",
+  "description": "Customer service payment dispute portal with chat and email functionality",
+  "main": "scripts/app.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "serve": "npx http-server -p 8080 -o"
+  },
+  "keywords": [
+    "payment",
+    "dispute",
+    "customer-service"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

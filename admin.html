@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard • Dispute Portal</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <style>
+    /* Minimal admin styles leveraging existing main.css */
+    .admin-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); padding: 1.25rem; margin-bottom: 1rem; }
+    .tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn { padding: .6rem .9rem; border-radius: 8px; border: 1px solid #eee; background: #f9fafb; cursor: pointer; }
+    .tab-btn.active { background: #111827; color: #fff; border-color: #111827; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; }
+    .col-4 { grid-column: span 4; }
+    .col-8 { grid-column: span 8; }
+    .hidden { display: none !important; }
+    .muted { color: #6b7280; font-size: .9rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: .6rem .5rem; border-bottom: 1px solid #eee; }
+    th { background: #f8fafc; font-weight: 600; }
+    .form-row { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .form-row > * { flex: 1 1 250px; }
+    .right { display: flex; justify-content: flex-end; gap: .5rem; }
+  </style>
+  <link rel="icon" href="data:," />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <script defer src="scripts/api-client.js?v=20251029-1"></script>
+  <!-- Socket.IO client for admin real-time notifications -->
+  <script defer src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script defer src="scripts/admin.js?v=20251029-1"></script>
+  <script>
+    // Prevent caching during dev
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+    }
+    window.addEventListener('error', function(e){
+      console.error('Admin page error:', e.message, 'at', e.filename+':'+e.lineno+':'+e.colno);
+      const el = document.getElementById('loginError');
+      if (el && e && e.message) {
+        el.textContent = 'Error: ' + e.message + (e.filename ? ' ('+e.filename+')' : '');
+        el.setAttribute('style','display:block; color:#b91c1c;');
+      }
+    });
+  </script>
+  <link rel="preconnect" href="http://localhost:5000" />
+  <link rel="preconnect" href="http://localhost:8080" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:8080 http://localhost:5000; connect-src 'self' http://localhost:5000 ws://localhost:5000; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:8080;" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Admin Dashboard" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="Dispute Admin" />
+  <meta name="msapplication-TileColor" content="#111827" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Admin dashboard for Dispute Portal" />
+  <meta name="author" content="" />
+  <meta property="og:title" content="Dispute Admin" />
+  <meta property="og:description" content="Admin dashboard for Dispute Portal" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://localhost:8080/admin.html" />
+  <meta property="og:site_name" content="Dispute Portal" />
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="36" height="36" viewBox="0 0 50 50">
+            <polygon points="25,5 45,25 25,45 5,25" fill="#111827"/>
+            <polygon points="25,12 38,25 25,38 12,25" fill="#FFFFFF"/>
+          </svg>
+          <span class="logo-text">Admin • Dispute Portal</span>
+        </div>
+        <nav class="nav">
+          <a href="/index.html" class="nav-link">Public Site</a>
+          <button id="logoutBtn" class="btn btn-secondary btn-small hidden">Logout</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-container">
+    <!-- Login Card -->
+    <section id="loginSection" class="card">
+      <h2>Admin Login</h2>
+      <p class="muted">Use your admin credentials to access the dashboard.</p>
+      <form id="loginForm" class="form">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="adminEmail">Email</label>
+            <input type="email" id="adminEmail" required placeholder="admin@disputeportal.com" />
+          </div>
+          <div class="form-field">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" required placeholder="••••••••" />
+          </div>
+        </div>
+        <div class="right">
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </div>
+        <p id="loginError" class="muted" style="color:#b91c1c; display:none;"></p>
+      </form>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboardSection" class="hidden">
+      <div class="card">
+        <div class="grid">
+          <div class="col-8">
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="disputesTab">Disputes</button>
+              <button class="tab-btn" data-tab="emailsTab">Email Templates</button>
+              <button class="tab-btn" data-tab="threadsTab">Email Threads</button>
+              <button class="tab-btn" data-tab="chatTab">Chat Sessions</button>
+              <button class="tab-btn" data-tab="statsTab">Stats</button>
+            </div>
+          </div>
+          <div class="col-4 right">
+            <span id="userBadge" class="muted">Signed in</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disputes Tab -->
+      <div id="disputesTab" class="card">
+        <div class="form-row" style="margin-bottom:.5rem;">
+          <select id="filterStatus">
+            <option value="">All Statuses</option>
+            <option value="new">New</option>
+            <option value="pending">Pending</option>
+            <option value="in_review">In Review</option>
+            <option value="resolved">Resolved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <input type="text" id="filterSearch" placeholder="Search by email or reference..." />
+          <button id="refreshDisputes" class="btn btn-secondary">Refresh</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Ref</th>
+              <th>Customer</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="disputesTableBody"></tbody>
+        </table>
+        
+        <!-- Dispute Detail Panel (hidden initially) -->
+        <div id="disputeDetail" class="card hidden" style="margin-top:1rem; border: 2px solid #e5e7eb;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3 id="disputeDetailTitle">Dispute Details</h3>
+            <button id="closeDisputeDetail" class="btn btn-secondary btn-small">×</button>
+          </div>
+          
+          <div class="grid">
+            <!-- Customer Info Column -->
+            <div class="col-6">
+              <div class="card" style="background: #f9fafb;">
+                <h4 style="margin-bottom:0.75rem;">Customer Information</h4>
+                <div style="font-size:0.9rem;">
+                  <p><strong>Name:</strong> <span id="detailCustomerName">-</span></p>
+                  <p><strong>Email:</strong> <span id="detailCustomerEmail">-</span></p>
+                  <p><strong>Phone:</strong> <span id="detailCustomerPhone">-</span></p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Transaction Info Column -->
+            <div class="col-6">
+              <div class="card" style="background: #f9fafb;">
+                <h4 style="margin-bottom:0.75rem;">Transaction Information</h4>
+                <div style="font-size:0.9rem;">
+                  <p><strong>Amount:</strong> <span id="detailAmount">-</span></p>
+                  <p><strong>Currency:</strong> <span id="detailCurrency">-</span></p>
+                  <p><strong>Date:</strong> <span id="detailTransactionDate">-</span></p>
+                  <p><strong>Role:</strong> <span id="detailRole">-</span></p>
+                  <p><strong>Auth Status:</strong> <span id="detailAuthStatus">-</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dispute Description -->
+          <div class="card" style="background: #f9fafb; margin-top:1rem;">
+            <h4 style="margin-bottom:0.5rem;">Description</h4>
+            <p id="detailDescription" style="white-space: pre-wrap; font-size:0.9rem;">-</p>
+          </div>
+
+          <!-- Attachments -->
+          <div class="card" style="background: #f9fafb; margin-top:1rem;">
+            <h4 style="margin-bottom:0.5rem;">Attachments</h4>
+            <div id="detailAttachments" style="font-size:0.9rem;"></div>
+          </div>
+
+          <!-- Status & Actions -->
+          <div class="card" style="margin-top:1rem;">
+            <h4 style="margin-bottom:0.75rem;">Status & Actions</h4>
+            <div class="form-row">
+              <select id="updateDisputeStatus">
+                <option value="pending">Pending</option>
+                <option value="in_review">In Review</option>
+                <option value="resolved">Resolved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <select id="updateDisputePriority">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                <option value="urgent">Urgent</option>
+              </select>
+              <button id="saveDisputeChanges" class="btn btn-primary">Save Changes</button>
+            </div>
+            <div class="form-field" style="margin-top:0.75rem;">
+              <label for="disputeResolution">Resolution Notes</label>
+              <textarea id="disputeResolution" rows="3" placeholder="Enter resolution details..."></textarea>
+            </div>
+          </div>
+
+          <!-- Linked Resources -->
+          <div class="grid" style="margin-top:1rem;">
+            <div class="col-6">
+              <div class="card" style="background: #eff6ff;">
+                <h4 style="margin-bottom:0.5rem;">📧 Email Thread</h4>
+                <p id="detailEmailThread" style="font-size:0.9rem;">-</p>
+                <button id="viewEmailThread" class="btn btn-secondary btn-small" style="margin-top:0.5rem;">View Thread</button>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card" style="background: #f0fdf4;">
+                <h4 style="margin-bottom:0.5rem;">💬 Chat Session</h4>
+                <p id="detailChatSession" style="font-size:0.9rem;">-</p>
+                <button id="viewChatSession" class="btn btn-secondary btn-small" style="margin-top:0.5rem;">View Chat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Templates Tab -->
+      <div id="emailsTab" class="card hidden">
+        <h3>Templates</h3>
+        <div id="templatesList"></div>
+        <hr />
+        <h4>Create Template</h4>
+        <form id="templateForm">
+          <div class="form-row">
+            <input type="text" id="tplName" placeholder="Name (e.g. dispute_acknowledgement)" required />
+            <input type="text" id="tplSubject" placeholder="Subject" required />
+          </div>
+          <div class="form-field">
+            <textarea id="tplBody" rows="4" placeholder="Body with {{placeholders}}" required></textarea>
+          </div>
+          <div class="right"><button class="btn btn-primary" type="submit">Save Template</button></div>
+        </form>
+      </div>
+
+      <!-- Email Threads Tab -->
+      <div id="threadsTab" class="card hidden">
+        <div class="form-row" style="margin-bottom:.5rem;">
+          <input type="text" id="threadsSearch" placeholder="Search by subject or email" />
+          <button id="refreshThreads" class="btn btn-secondary">Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Subject</th><th>From</th><th>Status</th><th>Dispute Link</th><th>Updated</th><th>Messages</th></tr></thead>
+          <tbody id="threadsTableBody"></tbody>
+        </table>
+        
+        <!-- Email Thread Detail Panel (hidden initially) -->
+        <div id="emailThreadDetail" class="card hidden" style="margin-top:1rem; border: 2px solid #8b5cf6;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <div>
+              <h3 id="emailThreadDetailTitle">Email Thread</h3>
+              <p class="muted" id="emailThreadDetailSubject" style="margin:0; font-size:0.9rem;"></p>
+            </div>
+            <div>
+              <select id="updateThreadStatus" style="margin-right:0.5rem;">
+                <option value="open">Open</option>
+                <option value="pending">Pending</option>
+                <option value="resolved">Resolved</option>
+                <option value="closed">Closed</option>
+              </select>
+              <button id="saveThreadStatus" class="btn btn-primary btn-small" style="margin-right:0.5rem;">Save Status</button>
+              <button id="closeEmailThreadDetail" class="btn btn-secondary btn-small">×</button>
+            </div>
+          </div>
+          
+          <!-- Thread Info -->
+          <div class="grid" style="margin-bottom:1rem;">
+            <div class="col-6">
+              <div class="card" style="background: #f9fafb;">
+                <p style="margin:0; font-size:0.9rem;"><strong>Customer:</strong> <span id="threadCustomerName">-</span></p>
+                <p style="margin:0.25rem 0 0 0; font-size:0.9rem;"><strong>Email:</strong> <span id="threadCustomerEmail">-</span></p>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card" style="background: #f9fafb;">
+                <p style="margin:0; font-size:0.9rem;"><strong>Status:</strong> <span id="threadStatus">-</span></p>
+                <p style="margin:0.25rem 0 0 0; font-size:0.9rem;"><strong>Created:</strong> <span id="threadCreated">-</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Messages Container -->
+          <div style="background:#f9fafb; border-radius:8px; padding:1rem; max-height:500px; overflow-y:auto; margin-bottom:1rem;">
+            <h4 style="margin-top:0;">Conversation</h4>
+            <div id="emailMessagesContainer" style="display:flex; flex-direction:column; gap:1rem;"></div>
+            <p id="noEmailMessages" class="muted hidden" style="text-align:center; padding:2rem;">No messages in this thread yet.</p>
+          </div>
+
+          <!-- Reply Form -->
+          <div class="card" style="background:#eff6ff;">
+            <h4 style="margin-top:0;">Send Reply</h4>
+            <div class="form-field">
+              <label for="replyBody">Message</label>
+              <textarea id="replyBody" rows="4" placeholder="Type your reply here..."></textarea>
+            </div>
+            <div class="right">
+              <button id="sendEmailReply" class="btn btn-primary">Send Reply</button>
+            </div>
+          </div>
+          
+          <!-- Link to Dispute -->
+          <div id="threadDisputeLink" class="card hidden" style="background:#fef3c7; margin-top:1rem;">
+            <p style="margin:0; font-size:0.9rem;">
+              <strong>📄 Linked Dispute:</strong> 
+              <span id="linkedDisputeRef">-</span>
+              <button id="viewLinkedDispute" class="btn btn-secondary btn-small" style="margin-left:0.5rem;">View Dispute</button>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Tab -->
+      <div id="chatTab" class="card hidden">
+        <div class="form-row" style="margin-bottom:.5rem;">
+          <select id="chatFilter">
+            <option value="">All</option>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+          </select>
+          <button id="refreshChats" class="btn btn-secondary">Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Session</th><th>User</th><th>Status</th><th>Updated</th></tr></thead>
+          <tbody id="chatTableBody"></tbody>
+        </table>
+        <div id="chatDetail" class="card hidden" style="margin-top:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4>Chat Detail</h4>
+            <div>
+              <button id="joinChatBtn" class="btn btn-secondary btn-small">Join</button>
+              <button id="closeChatBtn" class="btn btn-secondary btn-small">Close</button>
+              <button id="emailTranscriptBtn" class="btn btn-primary btn-small">Send Transcript</button>
+            </div>
+          </div>
+          <div id="chatMessagesAdmin" style="max-height:280px; overflow:auto; padding:.5rem; background:#f9fafb; border-radius:8px; margin-top:.5rem;"></div>
+          <div class="form-row" style="margin-top:.5rem;">
+            <input type="text" id="adminReplyInput" placeholder="Type a reply..." />
+            <button id="sendAdminReply" class="btn btn-primary btn-small">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Tab -->
+      <div id="statsTab" class="card hidden">
+        <h3>Dashboard Statistics</h3>
+        <div id="statsContent" class="grid">
+          <div class="col-4"><div class="card"><h4>Total Disputes</h4><div id="statTotalDisputes" style="font-size:2rem;font-weight:bold;color:#111827;">-</div></div></div>
+          <div class="col-4"><div class="card"><h4>Open Disputes</h4><div id="statOpenDisputes" style="font-size:2rem;font-weight:bold;color:#f59e0b;">-</div></div></div>
+          <div class="col-4"><div class="card"><h4>Closed Disputes</h4><div id="statResolvedDisputes" style="font-size:2rem;font-weight:bold;color:#10b981;">-</div></div></div>
+        </div>
+        <div class="grid" style="margin-top:1rem;">
+          <div class="col-4"><div class="card"><h4>Active Chats</h4><div id="statActiveChats" style="font-size:2rem;font-weight:bold;color:#3b82f6;">-</div></div></div>
+          <div class="col-4"><div class="card"><h4>Open Email Threads</h4><div id="statOpenThreads" style="font-size:2rem;font-weight:bold;color:#8b5cf6;">-</div></div></div>
+          <div class="col-4"><div class="card"><h4>Closed Email Threads</h4><div id="statClosedThreads" style="font-size:2rem;font-weight:bold;color:#6b7280;">-</div></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2025 Dispute Portal • Admin</p>
+        <div class="footer-links">
+          <a href="/index.html">Public</a>
+          <a href="#" id="scrollTop">Top</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast notifications -->
+  <div id="toast" style="position:fixed; right:1rem; bottom:1rem; display:none; z-index:9999;"></div>
+</body>
+</html>

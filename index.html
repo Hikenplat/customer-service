@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Dispute Portal</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="50" height="50" viewBox="0 0 50 50">
+                        <polygon points="25,5 45,25 25,45 5,25" fill="#DC143C"/>
+                        <polygon points="25,12 38,25 25,38 12,25" fill="#FFFFFF"/>
+                    </svg>
+                    <span class="logo-text">Dispute Portal</span>
+                </div>
+                <nav class="nav">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="#faq" class="nav-link">FAQ</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="/admin.html" class="nav-link">Admin</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Payment Dispute Resolution</h1>
+            <p class="hero-subtitle">We're here to help resolve your payment concerns quickly and efficiently</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Dispute Form Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h2>Submit Your Dispute</h2>
+                        <p>Please provide detailed information about your payment dispute</p>
+                    </div>
+
+                    <form id="disputeForm" class="dispute-form">
+                        <!-- Transaction Details -->
+                        <div class="form-group">
+                            <h3 class="form-section-title">
+                                <span class="section-number">1</span>
+                                Transaction Details
+                            </h3>
+                            
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="transactionDate">Transaction Date *</label>
+                                    <input type="date" id="transactionDate" name="transactionDate" required>
+                                </div>
+                                <div class="form-field">
+                                    <label for="transactionAmount">Amount *</label>
+                                    <input type="number" id="transactionAmount" name="transactionAmount" 
+                                           placeholder="0.00" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="currency">Currency *</label>
+                                    <select id="currency" name="currency" required>
+                                        <option value="">Select Currency</option>
+                                        <option value="USD">USD - US Dollar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - British Pound</option>
+                                        <option value="JPY">JPY - Japanese Yen</option>
+                                        <option value="CAD">CAD - Canadian Dollar</option>
+                                        <option value="AUD">AUD - Australian Dollar</option>
+                                        <option value="CHF">CHF - Swiss Franc</option>
+                                        <option value="CNY">CNY - Chinese Yuan</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label for="role">Your Role *</label>
+                                    <select id="role" name="role" required>
+                                        <option value="">Select Role</option>
+                                        <option value="sender">Sender</option>
+                                        <option value="receiver">Receiver</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="referenceNumber">Reference Number</label>
+                                <input type="text" id="referenceNumber" name="referenceNumber" 
+                                       placeholder="Enter transaction reference number">
+                            </div>
+                        </div>
+
+                        <!-- Proof of Ownership -->
+                        <div class="form-group">
+                            <h3 class="form-section-title">
+                                <span class="section-number">2</span>
+                                Proof of Ownership/Instructions
+                            </h3>
+                            
+                            <div class="form-field">
+                                <label for="authorizationStatus">Authorization Status *</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="authorizationStatus" value="not-authorized" required>
+                                        <span>I did NOT authorize this payment</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="authorizationStatus" value="unauthorized-amount" required>
+                                        <span>I authorized a different amount</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="authorizationStatus" value="duplicate" required>
+                                        <span>This is a duplicate charge</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="authorizationStatus" value="other" required>
+                                        <span>Other (please explain below)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="disputeDescription">Detailed Description *</label>
+                                <textarea id="disputeDescription" name="disputeDescription" rows="5" 
+                                          placeholder="Please provide a detailed explanation of why you're disputing this payment..." required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Supporting Documents -->
+                        <div class="form-group">
+                            <h3 class="form-section-title">
+                                <span class="section-number">3</span>
+                                Supporting Documents
+                            </h3>
+                            
+                            <div class="form-field">
+                                <label for="documents">Upload Documents</label>
+                                <div class="file-upload-area" id="fileUploadArea">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    <p>Drag and drop files here or click to browse</p>
+                                    <span class="file-types">Accepted: PDF, JPG, PNG, DOC, DOCX (Max 10MB each)</span>
+                                    <input type="file" id="documents" name="documents" multiple 
+                                           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" hidden>
+                                </div>
+                                <div id="fileList" class="file-list"></div>
+                            </div>
+                        </div>
+
+                        <!-- Statement of Accounts -->
+                        <div class="form-group">
+                            <h3 class="form-section-title">
+                                <span class="section-number">4</span>
+                                Statement of Accounts/Source of Funds
+                            </h3>
+                            
+                            <div class="form-field">
+                                <label for="accountStatement">Bank Statement/Account Details</label>
+                                <textarea id="accountStatement" name="accountStatement" rows="4" 
+                                          placeholder="Please provide details about the account or source of funds..."></textarea>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="statementUpload">Upload Bank Statement</label>
+                                <div class="file-upload-area small" id="statementUploadArea">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    <p>Upload statement</p>
+                                    <input type="file" id="statementUpload" name="statementUpload" 
+                                           accept=".pdf,.jpg,.jpeg,.png" hidden>
+                                </div>
+                                <div id="statementFileList" class="file-list"></div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="form-group">
+                            <h3 class="form-section-title">Contact Information</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="fullName">Full Name *</label>
+                                    <input type="text" id="fullName" name="fullName" required>
+                                </div>
+                                <div class="form-field">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                                Submit Dispute
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="saveDraftBtn">Save Draft</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <!-- Chat Widget -->
+                    <div class="widget chat-widget">
+                        <div class="widget-header">
+                            <h3>Live Chat Support</h3>
+                            <span class="status-indicator online"></span>
+                        </div>
+                        <div class="chat-container" id="chatContainer">
+                            <!-- Name/Email Form (shown before chat session starts) -->
+                            <div id="chatWelcomeForm" class="chat-welcome-form" style="padding: 1rem;">
+                                <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #6b7280;">
+                                    Please provide your details to start chatting with our support team.
+                                </p>
+                                <div class="form-field" style="margin-bottom: 0.75rem;">
+                                    <label for="chatNameInput" style="font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Your Name</label>
+                                    <input type="text" id="chatNameInput" placeholder="John Doe" style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;" />
+                                </div>
+                                <div class="form-field" style="margin-bottom: 0.75rem;">
+                                    <label for="chatEmailInput" style="font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Your Email</label>
+                                    <input type="email" id="chatEmailInput" placeholder="john@example.com" style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;" />
+                                </div>
+                                <button id="startChatBtn" class="btn btn-primary" style="width: 100%; padding: 0.6rem;">
+                                    Start Chat
+                                </button>
+                            </div>
+                            
+                            <!-- Chat Messages Area (shown after session starts) -->
+                            <div class="chat-messages" id="chatMessages" style="display: none;">
+                                <div class="chat-message bot">
+                                    <div class="message-avatar">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <p>Hello! How can I assist you with your payment dispute today?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Chat Input (shown after session starts) -->
+                            <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                                <input type="text" id="chatInput" placeholder="Type your message..." />
+                                <button id="sendChatBtn" class="send-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Support -->
+                    <div class="widget email-widget">
+                        <div class="widget-header">
+                            <h3>Email Support</h3>
+                        </div>
+                        <div class="widget-content">
+                            <p>Prefer email? Send us your dispute details</p>
+                            <form id="emailForm" class="email-form">
+                                <div class="form-field">
+                                    <label for="emailSubject">Subject</label>
+                                    <input type="text" id="emailSubject" name="emailSubject" 
+                                           placeholder="Brief description" required>
+                                </div>
+                                <div class="form-field">
+                                    <label for="emailMessage">Message</label>
+                                    <textarea id="emailMessage" name="emailMessage" rows="4" 
+                                              placeholder="Describe your dispute..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-small">Send Email</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Help Section -->
+                    <div class="widget help-widget">
+                        <div class="widget-header">
+                            <h3>Need Help?</h3>
+                        </div>
+                        <div class="widget-content">
+                            <ul class="help-links">
+                                <li><a href="#faq">Frequently Asked Questions</a></li>
+                                <li><a href="#process">Dispute Process Timeline</a></li>
+                                <li><a href="#docs">Required Documentation</a></li>
+                                <li><a href="#contact">Contact Information</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Dispute Portal. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Service</a>
+                    <a href="#security">Security</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon success">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h2>Dispute Submitted Successfully!</h2>
+            <p>Your dispute reference number is: <strong id="disputeRefNumber"></strong></p>
+            <p>We'll review your case and get back to you within 3-5 business days.</p>
+            <button class="btn btn-primary" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script src="scripts/api-client.js?v=20251029-1"></script>
+    <!-- Socket.IO client from backend server -->
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <script src="scripts/app.js?v=20251029-1"></script>
+</body>
+</html>

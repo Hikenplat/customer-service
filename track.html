@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Dispute • Dispute Portal</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .track-container {
+            max-width: 600px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
+        .track-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+        }
+        .track-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .track-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        .track-header p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        .track-form {
+            margin-bottom: 2rem;
+        }
+        .track-result {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-in_review {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .info-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .info-item {
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #111827;
+        }
+        .info-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .info-value {
+            font-size: 1.1rem;
+            color: #111827;
+            font-weight: 500;
+        }
+        .track-again {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #111827;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="36" height="36" viewBox="0 0 50 50">
+                        <polygon points="25,5 45,25 25,45 5,25" fill="#111827"/>
+                        <polygon points="25,12 38,25 25,38 12,25" fill="#FFFFFF"/>
+                    </svg>
+                    <span class="logo-text">Dispute Portal</span>
+                </div>
+                <nav class="nav">
+                    <a href="/index.html" class="nav-link">Submit Dispute</a>
+                    <a href="/admin.html" class="nav-link">Admin</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="track-container">
+        <div class="track-card">
+            <div class="track-header">
+                <h1>Track Your Dispute</h1>
+                <p>Enter your reference number and email to check the status of your dispute</p>
+            </div>
+
+            <!-- Track Form -->
+            <form id="trackForm" class="track-form">
+                <div class="form-field">
+                    <label for="referenceNumber">Reference Number</label>
+                    <input 
+                        type="text" 
+                        id="referenceNumber" 
+                        name="referenceNumber" 
+                        placeholder="DSP-1234567890" 
+                        required
+                        pattern="DSP-\d+"
+                        title="Format: DSP-1234567890"
+                    />
+                    <small style="color: #6b7280;">Format: DSP-1234567890 (found in your confirmation email)</small>
+                </div>
+
+                <div class="form-field">
+                    <label for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="your@email.com" 
+                        required
+                    />
+                    <small style="color: #6b7280;">The email you used when submitting the dispute</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Track Dispute
+                </button>
+            </form>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 1rem; color: #6b7280;">Searching for your dispute...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message"></div>
+
+            <!-- Track Result -->
+            <div id="trackResult" class="track-result">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2 style="margin-bottom: 0.5rem;">Dispute Found!</h2>
+                    <p style="color: #6b7280;">Reference: <strong id="resultRef"></strong></p>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div class="info-label">Current Status</div>
+                    <div id="statusBadge" class="status-badge" style="margin-top: 0.5rem;"></div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Transaction Amount</div>
+                        <div class="info-value" id="resultAmount"></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Transaction Date</div>
+                        <div class="info-value" id="resultDate"></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Priority</div>
+                        <div class="info-value" id="resultPriority"></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Submitted On</div>
+                        <div class="info-value" id="resultCreated"></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Last Updated</div>
+                        <div class="info-value" id="resultUpdated"></div>
+                    </div>
+
+                    <div id="resolutionInfo" class="info-item" style="display: none; grid-column: 1 / -1; border-left-color: #10b981;">
+                        <div class="info-label">Resolution</div>
+                        <div class="info-value" id="resultResolution"></div>
+                    </div>
+                </div>
+
+                <div class="track-again">
+                    <button id="trackAgainBtn" class="btn btn-secondary">
+                        Track Another Dispute
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Dispute Portal</p>
+                <div class="footer-links">
+                    <a href="/index.html">Submit Dispute</a>
+                    <a href="/track.html">Track Dispute</a>
+                    <a href="/admin.html">Admin</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/api-client.js?v=20251029-1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const trackForm = document.getElementById('trackForm');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const trackResult = document.getElementById('trackResult');
+            const trackAgainBtn = document.getElementById('trackAgainBtn');
+
+            trackForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const referenceNumber = document.getElementById('referenceNumber').value.trim();
+                const email = document.getElementById('email').value.trim();
+
+                // Hide previous results
+                trackForm.style.display = 'none';
+                errorMessage.style.display = 'none';
+                trackResult.style.display = 'none';
+                loading.style.display = 'block';
+
+                try {
+                    const response = await fetch('http://localhost:5000/api/disputes/track', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ referenceNumber, email })
+                    });
+
+                    const data = await response.json();
+
+                    loading.style.display = 'none';
+
+                    if (data.success && data.data) {
+                        // Show result
+                        displayResult(data.data);
+                    } else {
+                        // Show error
+                        errorMessage.textContent = data.error || 'Dispute not found. Please check your reference number and email.';
+                        errorMessage.style.display = 'block';
+                        trackForm.style.display = 'block';
+                    }
+                } catch (error) {
+                    loading.style.display = 'none';
+                    errorMessage.textContent = 'Failed to track dispute. Please try again later.';
+                    errorMessage.style.display = 'block';
+                    trackForm.style.display = 'block';
+                    console.error('Track error:', error);
+                }
+            });
+
+            function displayResult(dispute) {
+                // Populate fields
+                document.getElementById('resultRef').textContent = dispute.reference_number;
+                
+                // Status badge
+                const statusBadge = document.getElementById('statusBadge');
+                const statusLabels = {
+                    'pending': 'Pending Review',
+                    'in_review': 'Under Investigation',
+                    'resolved': 'Resolved',
+                    'rejected': 'Rejected'
+                };
+                statusBadge.textContent = statusLabels[dispute.status] || dispute.status;
+                statusBadge.className = `status-badge status-${dispute.status}`;
+
+                // Transaction info
+                document.getElementById('resultAmount').textContent = 
+                    `${dispute.currency || 'USD'} ${dispute.transaction_amount?.toFixed(2) || '0.00'}`;
+                document.getElementById('resultDate').textContent = 
+                    dispute.transaction_date || 'N/A';
+                document.getElementById('resultPriority').textContent = 
+                    (dispute.priority || 'medium').charAt(0).toUpperCase() + (dispute.priority || 'medium').slice(1);
+                document.getElementById('resultCreated').textContent = 
+                    new Date(dispute.created_at).toLocaleString();
+                document.getElementById('resultUpdated').textContent = 
+                    new Date(dispute.updated_at).toLocaleString();
+
+                // Resolution (if available)
+                if (dispute.resolution) {
+                    document.getElementById('resolutionInfo').style.display = 'block';
+                    document.getElementById('resultResolution').textContent = dispute.resolution;
+                }
+
+                trackResult.style.display = 'block';
+            }
+
+            trackAgainBtn.addEventListener('click', () => {
+                trackResult.style.display = 'none';
+                trackForm.style.display = 'block';
+                trackForm.reset();
+            });
+        });
+    </script>
+</body>
+</html>
