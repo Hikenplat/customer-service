@@ -6,9 +6,17 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
+import fs from 'fs';
 
 // Load environment variables
 dotenv.config();
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('📁 Created uploads directory');
+}
 
 // Import database and socket
 import { initializeDatabase } from './database/db';
@@ -180,11 +188,9 @@ initializeDatabase().then(() => {
     console.log('║  • GET    /api/chat/sessions                              ║');
     console.log('║  • PATCH  /api/chat/sessions/:id                          ║');
     console.log(`║  • GET    /api/health                                     ║`);
-    console.log('╠═══════════════════════════════════════════════════════════╣');
-    console.log('║  ADMIN CREDENTIALS:                                       ║');
-    console.log('║  Email:    admin@disputeportal.com                        ║');
-    console.log('║  Password: Admin@SecurePass123                            ║');
     console.log('╚═══════════════════════════════════════════════════════════╝');
+    console.log('');
+    console.log('📝 Admin credentials are shown above during database initialization');
   });
 });
 

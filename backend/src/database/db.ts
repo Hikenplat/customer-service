@@ -249,11 +249,99 @@ export async function getDb() {
   return db;
 }
 
-// Initialize database (just ensure it's read)
+// Initialize database (just ensure it's read, seed if empty)
 export async function initializeDatabase(): Promise<void> {
   await db.read();
+  
+  // Check if database is empty and needs seeding
+  const isEmpty = !db.data.admin_users || db.data.admin_users.length === 0;
+  
+  if (isEmpty) {
+    console.log('📦 Database is empty, running seed...');
+    await seedDatabase();
+  }
+  
   console.log('✅ Database initialized successfully (lowdb JSON)');
   console.log('🗂️  DB file:', dbPath);
+  console.log('👥 Admin users:', db.data.admin_users?.length || 0);
+  console.log('📧 Email templates:', db.data.email_templates?.length || 0);
+  
+  // Log admin credentials (only first admin user)
+  if (db.data.admin_users && db.data.admin_users.length > 0) {
+    const adminUser = db.data.admin_users[0];
+    console.log('🔐 Admin Login:');
+    console.log('   Email:', adminUser.email);
+    console.log('   Password:', process.env.ADMIN_PASSWORD || 'Admin@SecurePass123');
+  }
+}
+
+// Seed database with initial data
+async function seedDatabase(): Promise<void> {
+  const bcrypt = require('bcryptjs');
+  
+  // Create admin user
+  const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin@SecurePass123', 10);
+  
+  db.data.admin_users = [{
+    id: '1',
+    email: process.env.ADMIN_EMAIL || 'admin@disputeportal.com',
+    password: hashedPassword,
+    fullName: 'System Administrator',
+    role: 'super_admin',
+    permissions: [
+      'view_disputes',
+      'manage_disputes',
+      'view_chats',
+      'respond_chats',
+      'view_emails',
+      'send_emails',
+      'manage_templates',
+      'manage_users',
+      'view_analytics'
+    ],
+    isActive: true,
+    createdAt: new Date().toISOString()
+  }];
+  
+  // Create email templates
+  db.data.email_templates = [
+    {
+      id: '1',
+      name: 'Dispute Confirmation',
+      subject: 'Your Dispute {{referenceNumber}} Has Been Received',
+      body: 'Dear {{customerName}},\n\nThank you for submitting your payment dispute.\n\nReference Number: {{referenceNumber}}\nTransaction Amount: {{transactionAmount}}\nTransaction Date: {{transactionDate}}\n\nOur team will review your case and respond within 2-3 business days.\n\nBest regards,\nDispute Resolution Team',
+      variables: ['customerName', 'referenceNumber', 'transactionAmount', 'transactionDate'],
+      category: 'dispute_confirmation',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: '2',
+      name: 'Status Update',
+      subject: 'Update on Your Dispute {{referenceNumber}}',
+      body: 'Dear {{customerName}},\n\nYour dispute {{referenceNumber}} status has been updated to: {{newStatus}}\n\n{{updateMessage}}\n\nBest regards,\nDispute Resolution Team',
+      variables: ['customerName', 'referenceNumber', 'newStatus', 'updateMessage'],
+      category: 'status_update',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: '3',
+      name: 'Dispute Resolution',
+      subject: 'Resolution for Dispute {{referenceNumber}}',
+      body: 'Dear {{customerName}},\n\nYour dispute {{referenceNumber}} has been resolved.\n\nResolution: {{resolution}}\n\nThank you for your patience.\n\nBest regards,\nDispute Resolution Team',
+      variables: ['customerName', 'referenceNumber', 'resolution'],
+      category: 'resolution',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ];
+  
+  await db.write();
+  console.log('✅ Database seeded successfully');
 }
 
 export default dbInstance;
