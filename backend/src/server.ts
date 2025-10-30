@@ -115,14 +115,6 @@ app.get('/track', (_req, res) => {
   res.sendFile(path.join(frontendPath, 'track.html'));
 });
 
-// 404 handler for API routes
-app.use('/api/*', (_req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'API endpoint not found'
-  });
-});
-
 // 404 handler for other routes - serve a simple 404 page
 app.use((_req, res) => {
   res.status(404).send(`
