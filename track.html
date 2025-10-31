@@ -121,20 +121,91 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <svg width="36" height="36" viewBox="0 0 50 50">
-                        <polygon points="25,5 45,25 25,45 5,25" fill="#111827"/>
-                        <polygon points="25,12 38,25 25,38 12,25" fill="#FFFFFF"/>
-                    </svg>
-                    <span class="logo-text">HSBC Dispute Portal</span>
+    <header class="header" role="banner">
+        <div class="header-top-container">
+            <div class="header-top">
+                <div class="container">
+                    <nav aria-label="product line">
+                        <ul class="header-top-navigation">
+                            <li class="header-top-navigation-item is-active">
+                                <a href="/" aria-label="Dispute Portal">
+                                    Dispute Portal
+                                </a>
+                            </li>
+                            <li class="header-top-navigation-item">
+                                <a href="https://www.hsbc.co.uk" target="_blank" rel="noopener">
+                                    HSBC UK
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="header-top-meta">
+                        <div class="header-user-wrapper">
+                            <a class="register-button" href="#register" role="button">
+                                Register
+                            </a>
+                            <a class="login-button" href="/admin" role="button">
+                                Log on
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <nav class="nav">
-                    <a href="/" class="nav-link">Submit Dispute</a>
-                    <a href="/admin" class="nav-link">Admin</a>
-                </nav>
+            </div>
+        </div>
+
+        <div class="header-main-container">
+            <div class="header-main">
+                <div class="container">
+                    <!-- Mobile Menu Toggle (Left) -->
+                    <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    <div class="header-logo">
+                        <h1>
+                            <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
+                            <span>HSBC UK</span>
+                        </h1>
+                    </div>
+
+                    <!-- Mobile Login Button (Right) -->
+                    <div class="mobile-header-actions">
+                        <a class="mobile-login-button" href="/admin" role="button">
+                            Log on
+                        </a>
+                    </div>
+
+                    <nav class="header-main-navigation" aria-label="main navigation">
+                        <ul>
+                            <li class="header-main-navigation-item">
+                                <a href="/">
+                                    <span class="header-main-navigation-title">Home</span>
+                                    <span class="header-main-navigation-subtitle">Welcome</span>
+                                </a>
+                            </li>
+                            <li class="header-main-navigation-item">
+                                <a href="/submit">
+                                    <span class="header-main-navigation-title">Submit Dispute</span>
+                                    <span class="header-main-navigation-subtitle">New claim</span>
+                                </a>
+                            </li>
+                            <li class="header-main-navigation-item active">
+                                <a href="/track" aria-current="page">
+                                    <span class="header-main-navigation-title">Track</span>
+                                    <span class="header-main-navigation-subtitle">Check status</span>
+                                </a>
+                            </li>
+                            <li class="header-main-navigation-item">
+                                <a href="/admin">
+                                    <span class="header-main-navigation-title">Admin</span>
+                                    <span class="header-main-navigation-subtitle">Restricted</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </header>

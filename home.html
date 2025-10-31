@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en-gb" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSBC UK - Payment Dispute Portal</title>
+    <meta name="description" content="Welcome to HSBC UK Payment Dispute Portal. Submit and track your payment disputes with ease.">
+    
+    <link rel="icon" type="image/png" href="/content/dam/hsbc/gb/images/logos/favicon-32x32.png" sizes="32x32">
+    <link rel="stylesheet" href="styles/home.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="header-top-container">
+            <div class="header-top">
+                <div class="container">
+                    <nav aria-label="product line">
+                        <ul class="header-top-navigation">
+                            <li class="header-top-navigation-item is-active">
+                                <a href="/" aria-label="Dispute Portal currently selected" aria-selected="true">
+                                    Dispute Portal
+                                </a>
+                            </li>
+                            <li class="header-top-navigation-item">
+                                <a href="https://www.hsbc.co.uk" target="_blank" rel="noopener" aria-selected="false">
+                                    HSBC UK
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="header-top-meta">
+                        <div class="header-user-wrapper">
+                            <a class="register-button" href="#register" role="button">
+                                Register
+                            </a>
+                            <a class="login-button" href="/admin" role="button">
+                                Log on
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-main-container">
+            <div class="header-main">
+                <div class="container">
+                    <!-- Mobile Menu Toggle (Left) -->
+                    <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    <div class="header-logo">
+                        <h1>
+                            <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
+                            <span>HSBC UK</span>
+                        </h1>
+                    </div>
+
+                    <!-- Mobile Login Button (Right) -->
+                    <div class="mobile-header-actions">
+                        <a class="mobile-login-button" href="/admin" role="button">
+                            Log on
+                        </a>
+                    </div>
+
+                    <nav class="header-main-navigation" aria-label="main navigation">
+                        <ul>
+                            <li class="header-main-navigation-item active">
+                                <a href="/">
+                                    <span class="header-main-navigation-title">Home</span>
+                                    <span class="header-main-navigation-subtitle">Welcome</span>
+                                </a>
+                            </li>
+                            <li class="header-main-navigation-item">
+                                <a href="/submit">
+                                    <span class="header-main-navigation-title">Submit Dispute</span>
+                                    <span class="header-main-navigation-subtitle">New claim</span>
+                                </a>
+                            </li>
+                            <li class="header-main-navigation-item">
+                                <a href="/track">
+                                    <span class="header-main-navigation-title">Track</span>
+                                    <span class="header-main-navigation-subtitle">Check status</span>
+                                </a>
+                            </li>
+                            <li class="header-main-navigation-item">
+                                <a href="/admin">
+                                    <span class="header-main-navigation-title">Admin</span>
+                                    <span class="header-main-navigation-subtitle">Restricted</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+        <div class="hero-banner-wrapper">
+            <div class="hero-content-side">
+                <div class="container">
+                    <div class="hero-banner-content">
+                        <h1 class="hero-banner-main-header">
+                            Our happy customers is the only true measure of our success
+                        </h1>
+                        <div class="hero-banner-main-lead">
+                            Join our infinite list of happy customers by letting us resolve whatever dispute you might have.
+                        </div>
+                        <div class="hero-banner-main-buttons-wrapper">
+                            <a href="/submit" class="btn btn-primary btn-large">
+                                Submit a Dispute
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image-side">
+                <img src="/scripts/public/happy_customer.jpg" alt="Happy HSBC Customer" class="hero-customer-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- Dispute Type Quick Links -->
+    <section class="dispute-types-section">
+        <div class="container">
+            <div class="dispute-types-grid">
+                <div class="dispute-type-card corporate">
+                    <div class="dispute-type-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <h3>Corporate & Business Disputes</h3>
+                    <p>Specialized support for business accounts, commercial transactions, and corporate payment disputes. Our dedicated team understands the unique needs of business banking.</p>
+                    <a href="/submit?type=corporate" class="dispute-type-link">
+                        Learn more
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="dispute-type-card individual">
+                    <div class="dispute-type-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <h3>Individual Disputes</h3>
+                    <p>Personal banking dispute resolution for retail customers. Whether it's unauthorized transactions, billing errors, or service issues, we're here to help you.</p>
+                    <a href="/submit?type=individual" class="dispute-type-link">
+                        Learn more
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Timeline -->
+    <section class="process-section" id="process">
+        <div class="container">
+            <div class="section-header">
+                <h2>Dispute Resolution Process</h2>
+                <p>Simple steps to resolve your payment concerns</p>
+            </div>
+
+            <div class="process-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <h3>Submit Your Dispute</h3>
+                        <p>Fill out the online form with transaction details and supporting documents</p>
+                        <span class="timeline-duration">5-10 minutes</span>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <h3>Initial Review</h3>
+                        <p>Our team reviews your submission and may request additional information</p>
+                        <span class="timeline-duration">1-2 business days</span>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <h3>Investigation</h3>
+                        <p>We investigate the dispute and communicate with all relevant parties</p>
+                        <span class="timeline-duration">3-5 business days</span>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">4</div>
+                    <div class="timeline-content">
+                        <h3>Resolution</h3>
+                        <p>You receive a decision and, if applicable, a refund is processed</p>
+                        <span class="timeline-duration">1-3 business days</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Outstanding Performance Section -->
+    <section class="outstanding-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why HSBC Leads in Dispute Resolution</h2>
+                <p>Our commitment to customer satisfaction drives everything we do</p>
+            </div>
+            
+            <div class="outstanding-content">
+                <!-- Resolution Rate Chart -->
+                <div class="outstanding-chart">
+                    <h3>Resolution Success Rate</h3>
+                    <svg viewBox="0 0 350 280" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Grid lines -->
+                        <line x1="60" y1="220" x2="320" y2="220" stroke="#e5e7eb" stroke-width="2"/>
+                        <line x1="60" y1="170" x2="320" y2="170" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4"/>
+                        <line x1="60" y1="120" x2="320" y2="120" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4"/>
+                        <line x1="60" y1="70" x2="320" y2="70" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4"/>
+                        <line x1="60" y1="20" x2="320" y2="20" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4"/>
+                        
+                        <!-- Y-axis labels -->
+                        <text x="50" y="225" text-anchor="end" font-size="12" fill="#666">0%</text>
+                        <text x="50" y="175" text-anchor="end" font-size="12" fill="#666">25%</text>
+                        <text x="50" y="125" text-anchor="end" font-size="12" fill="#666">50%</text>
+                        <text x="50" y="75" text-anchor="end" font-size="12" fill="#666">75%</text>
+                        <text x="50" y="25" text-anchor="end" font-size="12" fill="#666">100%</text>
+                        
+                        <!-- Industry Average Bar -->
+                        <rect x="100" y="76" width="70" height="144" fill="#cbd5e1" rx="6"/>
+                        <text x="135" y="60" text-anchor="middle" font-size="13" fill="#64748b" font-weight="500">Industry</text>
+                        <text x="135" y="75" text-anchor="middle" font-size="13" fill="#64748b" font-weight="500">Average</text>
+                        <text x="135" y="145" text-anchor="middle" font-size="24" font-weight="bold" fill="#475569">72%</text>
+                        <text x="135" y="240" text-anchor="middle" font-size="11" fill="#94a3b8">Other Banks</text>
+                        
+                        <!-- HSBC Bar -->
+                        <rect x="210" y="18" width="70" height="202" fill="#DC143C" rx="6"/>
+                        <text x="245" y="8" text-anchor="middle" font-size="13" fill="#DC143C" font-weight="bold">HSBC UK</text>
+                        <text x="245" y="120" text-anchor="middle" font-size="28" font-weight="bold" fill="#fff">95%</text>
+                        <text x="245" y="240" text-anchor="middle" font-size="11" fill="#DC143C" font-weight="bold">Market Leader</text>
+                        
+                        <!-- Success indicator -->
+                        <circle cx="300" cy="35" r="8" fill="#10b981"/>
+                        <path d="M297 35 L299 37 L303 33" stroke="#fff" stroke-width="2" fill="none"/>
+                        
+                        <!-- Difference indicator -->
+                        <path d="M175 100 Q190 90 205 100" stroke="#DC143C" stroke-width="2" fill="none" marker-end="url(#arrowred)"/>
+                        <text x="190" y="95" text-anchor="middle" font-size="12" fill="#DC143C" font-weight="bold">+23%</text>
+                        <defs>
+                            <marker id="arrowred" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#DC143C" />
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <!-- Recommendation Rate Chart -->
+                <div class="outstanding-chart">
+                    <h3>Customer Recommendation Rate</h3>
+                    <svg viewBox="0 0 350 280" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Donut chart background -->
+                        <circle cx="175" cy="130" r="85" fill="none" stroke="#f1f5f9" stroke-width="35"/>
+                        
+                        <!-- Donut chart filled portion (90% = 324 degrees) -->
+                        <circle cx="175" cy="130" r="85" fill="none" stroke="#DC143C" stroke-width="35"
+                                stroke-dasharray="477 531" stroke-dashoffset="119" 
+                                transform="rotate(-90 175 130)" stroke-linecap="round"/>
+                        
+                        <!-- Center text -->
+                        <text x="175" y="120" text-anchor="middle" font-size="48" font-weight="bold" fill="#DC143C">90%</text>
+                        <text x="175" y="145" text-anchor="middle" font-size="14" fill="#666">Would</text>
+                        <text x="175" y="162" text-anchor="middle" font-size="14" fill="#666">Recommend</text>
+                        
+                        <!-- Legend -->
+                        <circle cx="80" cy="240" r="6" fill="#DC143C"/>
+                        <text x="92" y="245" font-size="13" fill="#333">Recommend (9/10)</text>
+                        
+                        <circle cx="220" cy="240" r="6" fill="#f1f5f9"/>
+                        <text x="232" y="245" font-size="13" fill="#666">Neutral (1/10)</text>
+                        
+                        <!-- Star rating -->
+                        <g transform="translate(130, 30)">
+                            <path d="M12 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#fbbf24"/>
+                            <path d="M27 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#fbbf24"/>
+                            <path d="M42 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#fbbf24"/>
+                            <path d="M57 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#fbbf24"/>
+                            <path d="M72 2l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#fbbf24"/>
+                        </g>
+                        <text x="175" y="55" text-anchor="middle" font-size="12" fill="#92400e" font-weight="600">5 Star Service</text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Extended Description -->
+            <div class="outstanding-description">
+                <div class="description-content">
+                    <h3>Our Commitment to Excellence</h3>
+                    <p>At HSBC UK, we believe that our success is measured by the satisfaction and happiness of our customers. Our dispute resolution service embodies this philosophy through:</p>
+                    
+                    <div class="commitment-grid">
+                        <div class="commitment-item">
+                            <div class="commitment-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                                </svg>
+                            </div>
+                            <h4>Customer-First Approach</h4>
+                            <p>Every decision we make prioritizes your best interests. We thoroughly investigate each case with the presumption that our customers deserve fair treatment and swift resolution.</p>
+                        </div>
+
+                        <div class="commitment-item">
+                            <div class="commitment-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                            <h4>Speed & Efficiency</h4>
+                            <p>We understand that financial disputes cause stress. That's why we've streamlined our process to resolve 95% of cases within 3-5 business days—significantly faster than the industry standard.</p>
+                        </div>
+
+                        <div class="commitment-item">
+                            <div class="commitment-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                </svg>
+                            </div>
+                            <h4>Going Above & Beyond</h4>
+                            <p>We don't just resolve disputes—we ensure you feel heard, valued, and supported throughout the entire process. Our dedicated team provides personalized attention and clear communication at every step.</p>
+                        </div>
+
+                        <div class="commitment-item">
+                            <div class="commitment-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <h4>Expert Team</h4>
+                            <p>Our dispute resolution specialists undergo rigorous training and stay updated on the latest regulations. Their expertise ensures accurate, fair, and legally sound resolutions every time.</p>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-highlight">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="#DC143C" opacity="0.2">
+                            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
+                            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
+                        </svg>
+                        <p class="testimonial-text">"This exceptional service and unwavering commitment to customer satisfaction is why <strong>9 out of 10 customers enthusiastically recommend</strong> our dispute resolution service to their friends, family, and colleagues. We don't just meet expectations—we exceed them."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators -->
+    <section class="trust-section">
+        <div class="container">
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <div class="trust-number">10,000+</div>
+                    <div class="trust-label">Disputes Resolved</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-number">95%</div>
+                    <div class="trust-label">Customer Satisfaction</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-number">24/7</div>
+                    <div class="trust-label">Online Support</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-number">3-5 Days</div>
+                    <div class="trust-label">Average Resolution Time</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Help Section -->
+    <section class="help-section" id="help">
+        <div class="container">
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3>Support and Security</h3>
+                    <ul class="help-links">
+                        <li><a href="#mobile">Mobile Support</a></li>
+                        <li><a href="#security">Security Guidelines</a></li>
+                        <li><a href="#scams">Latest Scam Warnings</a></li>
+                        <li><a href="#reset">Reset Your Password</a></li>
+                        <li><a href="#contact">Contact Information</a></li>
+                    </ul>
+                </div>
+
+                <div class="help-card">
+                    <h3>Tools and Guides</h3>
+                    <ul class="help-links">
+                        <li><a href="#calculator">Dispute Calculator</a></li>
+                        <li><a href="#forms">Download Forms</a></li>
+                        <li><a href="#manage">Manage Your Account</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+
+                <div class="help-card">
+                    <h3>Common Questions</h3>
+                    <ul class="help-links">
+                        <li><a href="#what">What is a payment dispute?</a></li>
+                        <li><a href="#how-long">How long does it take?</a></li>
+                        <li><a href="#documents">What documents do I need?</a></li>
+                        <li><a href="#track">How do I track my dispute?</a></li>
+                        <li><a href="#refund">When will I get a refund?</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-column">
+                        <div class="footer-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <h3>Help & Support</h3>
+                        </div>
+                        <p>Got a question? We're here to help you</p>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <h3>Contact Us</h3>
+                        </div>
+                        <p>Find ways to reach our support team</p>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                            <h3>About HSBC</h3>
+                        </div>
+                        <p>Careers, media, and corporate information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <nav aria-label="Footer navigation">
+                    <ul class="footer-links">
+                        <li><a href="#legal">Legal</a></li>
+                        <li><a href="#privacy">Privacy Notice</a></li>
+                        <li><a href="#cookies">Cookie Notice</a></li>
+                        <li><a href="#accessibility">Accessibility</a></li>
+                        <li><a href="#security">Security</a></li>
+                    </ul>
+                </nav>
+                <div class="footer-legal">
+                    <p>&copy; Copyright HSBC UK 2025. All rights reserved</p>
+                    <p>HSBC UK Bank plc. Registered in England and Wales.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Chat Button -->
+    <button class="floating-chat-btn" aria-label="Open live chat" title="Chat with us">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </button>
+
+    <script src="scripts/home.js"></script>
+</body>
+</html>

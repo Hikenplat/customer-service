@@ -104,6 +104,10 @@ app.get('/api/health', (_req, res) => {
 
 // Serve frontend HTML pages
 app.get('/', (_req, res) => {
+  res.sendFile(path.join(frontendPath, 'home.html'));
+});
+
+app.get('/submit', (_req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
