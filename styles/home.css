@@ -63,12 +63,12 @@ body {
 }
 
 .header-top-container {
-    background: var(--hsbc-black);
+    background: #000000;
     color: var(--white);
 }
 
 .header-top {
-    padding: 8px 0;
+    padding: 1px 0;
 }
 
 .header-top .container {
@@ -80,14 +80,30 @@ body {
 .header-top-navigation {
     display: flex;
     list-style: none;
-    gap: 30px;
+    gap: 0;
+}
+
+.header-top-navigation-item {
+    position: relative;
+    padding: 0 15px;
+}
+
+.header-top-navigation-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .header-top-navigation-item a {
     color: var(--white);
     text-decoration: none;
-    font-size: 14px;
-    padding: 5px 0;
+    font-size: 12px;
+    padding: 3px 0;
     border-bottom: 2px solid transparent;
     transition: border-color 0.3s ease;
 }
@@ -110,10 +126,10 @@ body {
 .register-button {
     background: transparent;
     color: var(--white);
-    padding: 8px 18px;
+    padding: 4px 12px;
     border-radius: 4px;
     text-decoration: none;
-    font-size: var(--font-size-small);
+    font-size: 11px;
     font-weight: 500;
     transition: all 0.3s ease;
     border: 1px solid var(--white);
@@ -127,10 +143,10 @@ body {
 .login-button {
     background: var(--hsbc-red);
     color: var(--white);
-    padding: 8px 18px;
+    padding: 4px 12px;
     border-radius: 4px;
     text-decoration: none;
-    font-size: var(--font-size-small);
+    font-size: 11px;
     font-weight: 500;
     transition: background 0.3s ease;
 }
@@ -163,8 +179,12 @@ body {
     align-items: center;
     gap: 12px;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 400;
     color: var(--hsbc-black);
+}
+
+.header-logo h1 strong {
+    font-weight: 700;
 }
 
 .header-logo img {
@@ -223,6 +243,121 @@ body {
 }
 
 /* ==========================================
+   Four Column Links Section
+   ========================================== */
+
+.cc-wrapper {
+    background: var(--white);
+    padding: 40px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.cc-columns-25-25-25-25 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.cc-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.links-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.link-container {
+    margin: 0;
+}
+
+.A-LNKC28L-RW-ALL {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--hsbc-black);
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.A-LNKC28L-RW-ALL:hover {
+    background: transparent;
+    color: var(--hsbc-black);
+    border-color: transparent;
+    transform: translateX(4px);
+}
+
+.A-LNKC28L-RW-ALL .link {
+    flex: 1;
+}
+
+.icon-chevron-right-small {
+    font-size: 18px;
+    font-weight: bold;
+    color: #DC143C;
+}
+
+/* ==========================================
+   Trustpilot Section
+   ========================================== */
+
+.trustpilot-section {
+    background: #f8f9fa;
+    padding: 40px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.trustpilot-content {
+    display: flex;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.trustpilot-left {
+    flex: 0 0 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.trustpilot-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.trustpilot-text {
+    text-align: left;
+}
+
+.trustpilot-text p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--hsbc-black);
+    margin: 0;
+}
+
+.trustpilot-right {
+    flex: 0 0 50%;
+    /* Empty for future content */
+}
+
+/* ==========================================
    Hero Banner
    ========================================== */
 
@@ -276,18 +411,18 @@ body {
 }
 
 .hero-banner-main-header {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 400;
     color: var(--hsbc-black);
     line-height: 1.3;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .hero-banner-main-lead {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.5;
-    margin-bottom: 18px;
+    margin-bottom: 15px;
 }
 
 .hero-banner-main-buttons-wrapper {
@@ -336,8 +471,8 @@ body {
 }
 
 .btn-large {
-    padding: 16px 32px;
-    font-size: 18px;
+    padding: 12px 24px;
+    font-size: 15px;
 }
 
 /* ==========================================
@@ -345,6 +480,7 @@ body {
    ========================================== */
 
 .dispute-types-section {
+    display: none;
     padding: 0;
     background: var(--white);
 }
@@ -445,12 +581,33 @@ body {
     background: var(--white);
 }
 
-.outstanding-content {
+.outstanding-split {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 50px;
-    margin-bottom: 50px;
+    gap: 40px;
+    margin-bottom: 40px;
     align-items: start;
+}
+
+.outstanding-image-half {
+    width: 100%;
+}
+
+.service-quality-image {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.outstanding-charts-half {
+    width: 100%;
+}
+
+.outstanding-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
 }
 
 .outstanding-chart {
@@ -470,9 +627,24 @@ body {
     font-size: var(--font-size-large);
     font-weight: 500;
     color: var(--hsbc-black);
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     width: 100%;
     flex-shrink: 0;
+}
+
+.star-service-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.star-service-text {
+    font-size: 12px;
+    color: #92400e;
+    font-weight: 600;
+    margin: 0;
 }
 
 .outstanding-chart svg {
@@ -857,6 +1029,7 @@ body {
         background: transparent;
         border: none;
         padding: 8px;
+        padding-right: 16px;
         cursor: pointer;
         order: 1;
     }
@@ -871,7 +1044,23 @@ body {
     }
     
     .mobile-menu-toggle:hover span {
-        background: var(--hsbc-red);
+        background: var(--white);
+    }
+    
+    /* Separator line after hamburger */
+    .mobile-menu-toggle::after {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 32px;
+        background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .mobile-menu-toggle {
+        position: relative;
     }
     
     /* Logo (Center) */
@@ -977,6 +1166,11 @@ body {
     
     .dispute-type-card.corporate {
         border-right: none;
+    }
+    
+    .outstanding-split {
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
     
     .outstanding-content {
@@ -1087,34 +1281,79 @@ body {
    Floating Chat Button
    ========================================== */
 
-.floating-chat-btn {
+.floating-chat-widget {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--hsbc-red);
-    color: var(--white);
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
     z-index: 999;
 }
 
+.chat-prompt {
+    background: var(--white);
+    padding: 10px 14px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--hsbc-black);
+    line-height: 1.4;
+    text-align: center;
+    animation: fadeInSlide 0.5s ease;
+}
+
+.chat-subtext {
+    font-size: 11px;
+    font-weight: normal;
+    color: #666;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.floating-chat-btn {
+    padding: 12px 24px;
+    border-radius: 24px;
+    background: var(--white);
+    color: var(--hsbc-black);
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    font-weight: 500;
+}
+
 .floating-chat-btn:hover {
-    background: var(--hsbc-dark-red);
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(220, 20, 60, 0.5);
+    background: #f8f9fa;
+    border-color: var(--hsbc-red);
+    color: var(--hsbc-red);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .floating-chat-btn svg {
-    width: 28px;
-    height: 28px;
+    width: 20px;
+    height: 20px;
+}
+
+.chat-text {
+    font-weight: 500;
 }
 
 /* ==========================================
@@ -1127,7 +1366,7 @@ body {
     top: 12px;
     left: 15px;
     z-index: 1001;
-    background: var(--hsbc-red);
+    background: transparent;
     border: none;
     padding: 10px;
     border-radius: 4px;
@@ -1141,13 +1380,17 @@ body {
     display: block;
     width: 24px;
     height: 3px;
-    background: var(--white);
+    background: var(--hsbc-black);
     border-radius: 2px;
     transition: all 0.3s ease;
 }
 
 .mobile-menu-toggle:hover {
-    background: var(--hsbc-dark-red);
+    background: transparent;
+}
+
+.mobile-menu-toggle:hover span {
+    background: var(--white);
 }
 
 .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
@@ -1201,5 +1444,31 @@ body {
     .header-main-navigation-item a {
         padding: 12px 10px;
         display: block;
+    }
+    
+    /* 4-column links responsive */
+    .cc-columns-25-25-25-25 {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .cc-column {
+        gap: 15px;
+    }
+    
+    /* Trustpilot responsive */
+    .trustpilot-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .trustpilot-left {
+        flex: 0 0 100%;
+    }
+    
+    /* Chat widget responsive */
+    .floating-chat-widget {
+        bottom: 20px;
+        right: 20px;
     }
 }
