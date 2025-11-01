@@ -10,7 +10,7 @@
 }
 
 :root {
-    --hsbc-red: #DC143C;
+    --hsbc-red: #B8102E;
     --hsbc-dark-red: #B8102E;
     --hsbc-black: #333333;
     --hsbc-gray: #767676;
@@ -306,7 +306,7 @@ body {
 .icon-chevron-right-small {
     font-size: 18px;
     font-weight: bold;
-    color: #DC143C;
+    color: var(--hsbc-red);
 }
 
 /* ==========================================
@@ -454,9 +454,9 @@ body {
 }
 
 .btn-primary:hover {
-    background: var(--hsbc-dark-red);
+    background: #970925;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    box-shadow: 0 4px 12px rgba(151, 9, 37, 0.35);
 }
 
 .btn-secondary {
@@ -1016,7 +1016,7 @@ body {
     
     .header-main .container {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto auto 1fr;
         align-items: center;
         gap: 12px;
     }
@@ -1024,14 +1024,14 @@ body {
     /* Mobile Menu Toggle (Left) */
     .mobile-menu-toggle {
         display: flex;
+        grid-column: 1;
         flex-direction: column;
         gap: 4px;
         background: transparent;
         border: none;
         padding: 8px;
-        padding-right: 16px;
+        padding-right: 7px;
         cursor: pointer;
-        order: 1;
     }
     
     .mobile-menu-toggle span {
@@ -1051,7 +1051,7 @@ body {
     .mobile-menu-toggle::after {
         content: '';
         position: absolute;
-        right: -8px;
+        right: 1px;
         top: 50%;
         transform: translateY(-50%);
         width: 1px;
@@ -1065,9 +1065,10 @@ body {
     
     /* Logo (Center) */
     .header-logo {
-        text-align: center;
-        order: 2;
-        justify-self: center;
+        grid-column: 2;
+        text-align: left;
+        justify-self: start;
+        margin-left: 30px;
     }
     
     .header-logo h1 {
@@ -1083,7 +1084,7 @@ body {
     /* Mobile Login Button (Right) */
     .mobile-header-actions {
         display: flex;
-        order: 3;
+        grid-column: 3;
         justify-self: end;
     }
     
