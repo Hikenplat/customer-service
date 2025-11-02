@@ -499,5 +499,38 @@
     <!-- Header authentication helper -->
     <script src="scripts/headerAuth.js"></script>
     <script src="scripts/app.js?v=20251029-1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatButton = document.querySelector('.floating-chat-btn');
+            const chatPrompt = document.querySelector('.chat-prompt');
+            const sessionManager = window.chatSessionManager;
+
+            if (!chatButton) {
+                return;
+            }
+
+            if (sessionManager && typeof sessionManager.hasActiveSession === 'function' && sessionManager.hasActiveSession() && chatPrompt) {
+                chatPrompt.innerHTML = 'Resume Chat<br><span class="chat-subtext">Continue your conversation</span>';
+            }
+
+            chatButton.addEventListener('click', function () {
+                const chatWidget = document.querySelector('.chat-widget');
+                if (!chatWidget) {
+                    return;
+                }
+
+                chatWidget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.location.hash = 'chat';
+
+                if (sessionManager && typeof sessionManager.hasActiveSession === 'function' && sessionManager.hasActiveSession()) {
+                    document.getElementById('chatInput')?.focus();
+                } else if (sessionManager && typeof sessionManager.isAuthenticated === 'function' && sessionManager.isAuthenticated()) {
+                    document.getElementById('startChatBtn')?.focus();
+                } else {
+                    document.getElementById('chatNameInput')?.focus();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
