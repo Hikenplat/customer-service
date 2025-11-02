@@ -6,9 +6,18 @@
 }
 
 :root {
-    --primary-red: #DC143C;
-    --dark-red: #B22234;
-    --light-red: #FF6B8A;
+    /* HSBC brand palette */
+    --primary-red: #B8102E;
+    --dark-red: #9E0E29;
+    --light-red: #FFCDD6;
+    --hsbc-red: #B8102E;
+    --hsbc-dark-red: #9E0E29;
+    --hsbc-black: #333333;
+    --hsbc-gray: #767676;
+    --hsbc-light-gray: #F4F4F4;
+    --hsbc-border: #E5E5E5;
+
+    /* Shared neutrals */
     --white: #FFFFFF;
     --off-white: #FAFAFA;
     --light-gray: #F5F5F5;
@@ -16,23 +25,44 @@
     --text-dark: #333333;
     --text-gray: #666666;
     --text-light: #999999;
+
+    /* Motion and depth */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
     --border-radius: 8px;
     --transition: all 0.3s ease;
+
+    /* Typography */
+    --font-family: 'UniversforHSBC', Arial, Helvetica, sans-serif;
+    --font-size-small: 14px;
+    --font-size-base: 16px;
+    --font-size-large: 18px;
+    --font-size-h1: 32px;
+    --font-size-h2: 24px;
+    --font-size-h3: 18px;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: var(--text-dark);
-    background-color: var(--off-white);
-    line-height: 1.6;
-    padding-top: 160px;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    color: var(--hsbc-black);
+    background-color: var(--white);
+    line-height: 1.5;
+    padding-top: 180px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+main {
+    flex: 1;
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -40,8 +70,8 @@ body {
 /* Header */
 .header {
     background: var(--white);
-    border-bottom: 1px solid var(--border-gray);
-    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--hsbc-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     position: fixed;
     top: 0;
     left: 0;
@@ -50,39 +80,58 @@ body {
 }
 
 .header-top-container {
-    background: #111827;
+    background: #000000;
     color: var(--white);
 }
 
 .header-top {
-    padding: 0.5rem 0;
+    padding: 1px 0;
 }
 
 .header-top .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1.5rem;
 }
 
 .header-top-navigation {
     display: flex;
     list-style: none;
-    gap: 1.5rem;
+    gap: 0;
+}
+
+.header-top-navigation-item {
+    position: relative;
+    padding: 0 15px;
+}
+
+.header-top-navigation-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .header-top-navigation-item a {
     color: var(--white);
     text-decoration: none;
-    font-size: 0.85rem;
-    padding: 0.25rem 0;
+    font-size: 12px;
+    padding: 3px 0;
     border-bottom: 2px solid transparent;
-    transition: var(--transition);
+    transition: border-color 0.3s ease;
 }
 
 .header-top-navigation-item.is-active a,
 .header-top-navigation-item a:hover {
-    border-bottom-color: var(--primary-red);
+    border-bottom-color: var(--hsbc-red);
+}
+
+.header-top-navigation-item.is-active a {
+    font-weight: 600;
 }
 
 .header-top-meta {
@@ -93,37 +142,39 @@ body {
 .header-user-wrapper {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 15px;
 }
 
 .register-button {
     background: transparent;
     color: var(--white);
-    padding: 0.45rem 1rem;
+    padding: 4px 12px;
     border-radius: 4px;
-    border: 1px solid var(--white);
     text-decoration: none;
-    font-size: 0.85rem;
-    transition: var(--transition);
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid var(--white);
 }
 
 .register-button:hover {
     background: var(--white);
-    color: #111827;
+    color: var(--hsbc-black);
 }
 
 .login-button {
-    background: var(--primary-red);
+    background: var(--hsbc-red);
     color: var(--white);
-    padding: 0.45rem 1.1rem;
+    padding: 4px 12px;
     border-radius: 4px;
     text-decoration: none;
-    font-size: 0.85rem;
-    transition: var(--transition);
+    font-size: 11px;
+    font-weight: 500;
+    transition: background 0.3s ease;
 }
 
 .login-button:hover {
-    background: var(--dark-red);
+    background: var(--hsbc-dark-red);
 }
 
 .header-main-container {
@@ -131,23 +182,31 @@ body {
 }
 
 .header-main {
-    padding: 0.75rem 0;
+    padding: 15px 0;
 }
 
 .header-main .container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 2rem;
+    align-items: center;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
 }
 
 .header-logo h1 {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 1.6rem;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--hsbc-black);
+}
+
+.header-logo h1 strong {
     font-weight: 700;
-    color: var(--text-dark);
 }
 
 .header-logo img {
@@ -160,45 +219,171 @@ body {
 .header-main-navigation ul {
     display: flex;
     list-style: none;
-    gap: 1.5rem;
+    gap: 30px;
 }
 
 .header-main-navigation-item a {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
     text-decoration: none;
-    padding: 0.75rem 1.1rem;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: var(--transition);
-    background: transparent;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: background 0.3s ease;
 }
 
 .header-main-navigation-item a:hover {
-    border-color: var(--primary-red);
-    background: rgba(220, 20, 60, 0.08);
+    background: var(--hsbc-light-gray);
+}
+
+.header-main-navigation-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--hsbc-black);
+}
+
+.header-main-navigation-subtitle {
+    font-size: 12px;
+    color: var(--hsbc-gray);
+    margin-top: 2px;
 }
 
 .header-main-navigation-item.active a,
 .header-main-navigation-item a[aria-current="page"] {
-    border-color: var(--primary-red);
-    background: rgba(220, 20, 60, 0.1);
+    background: var(--hsbc-light-gray);
 }
 
-.header-main-navigation-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-dark);
+.header-main-navigation-item.active .header-main-navigation-title,
+.header-main-navigation-item a[aria-current="page"] .header-main-navigation-title {
+    color: var(--hsbc-red);
 }
 
-.header-main-navigation-subtitle {
-    font-size: 0.75rem;
-    color: var(--text-gray);
+.mobile-menu-toggle {
+    display: none;
+}
+
+.mobile-header-actions {
+    display: none;
 }
 
 #logoutBtn {
     margin-left: auto;
+}
+
+@media (max-width: 968px) {
+    body {
+        padding-top: 140px;
+    }
+
+    .header-top-container {
+        display: none;
+    }
+
+    .header-main {
+        padding: 12px 0;
+    }
+
+    .header-main .container {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .mobile-menu-toggle {
+        display: flex;
+        grid-column: 1;
+        flex-direction: column;
+        gap: 4px;
+        background: transparent;
+        border: none;
+        padding: 8px;
+        padding-right: 7px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .mobile-menu-toggle span {
+        display: block;
+        width: 24px;
+        height: 3px;
+        background: var(--hsbc-black);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle:hover span {
+        background: var(--white);
+    }
+
+    .mobile-menu-toggle::after {
+        content: '';
+        position: absolute;
+        right: 1px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 32px;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .header-logo {
+        grid-column: 2;
+        justify-self: start;
+        margin-left: 30px;
+    }
+
+    .header-logo h1 {
+        font-size: 16px;
+        gap: 8px;
+    }
+
+    .header-logo img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .mobile-header-actions {
+        display: flex;
+        grid-column: 3;
+        justify-self: end;
+    }
+
+    .mobile-login-button {
+        background: var(--hsbc-red);
+        color: var(--white);
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .header-main-navigation {
+        grid-column: 1 / -1;
+        display: none;
+    }
+
+    .header-main-navigation.active {
+        display: block;
+        background: var(--white);
+        border-top: 1px solid var(--hsbc-border);
+        padding: 12px 0;
+        margin-top: 12px;
+    }
+
+    .header-main-navigation ul {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .header-main-navigation-item a {
+        padding: 12px 20px;
+        border-radius: 0;
+    }
+
+    .header-main-navigation-item a:hover {
+        background: rgba(0, 0, 0, 0.03);
+    }
 }
 
 /* Hero Section */
@@ -207,6 +392,29 @@ body {
     color: var(--white);
     padding: 3rem 0;
     text-align: center;
+    margin-left: 250px;
+    margin-right: 250px;
+}
+
+@media (max-width: 1400px) {
+    .hero {
+        margin-left: 150px;
+        margin-right: 150px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .hero {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
 }
 
 .hero-title {
@@ -223,6 +431,29 @@ body {
 /* Main Content */
 .main-content {
     padding: 3rem 0;
+    margin-left: 250px;
+    margin-right: 250px;
+}
+
+@media (max-width: 1400px) {
+    .main-content {
+        margin-left: 150px;
+        margin-right: 150px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .main-content {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
 }
 
 .content-grid {
@@ -690,33 +921,220 @@ body {
 
 /* Footer */
 .footer {
-    background: var(--text-dark);
+    background: var(--hsbc-black);
     color: var(--white);
-    padding: 2rem 0;
     margin-top: 4rem;
 }
 
-.footer-content {
+.footer-main {
+    padding: 15px 0;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+}
+
+.footer-column {
+    padding: 15px 30px;
+    position: relative;
+}
+
+.footer-column::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20px;
+    bottom: 20px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.footer-column:last-child::after {
+    display: none;
+}
+
+.footer-title {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.footer-title svg {
+    color: var(--hsbc-red);
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.footer-title h3 {
+    font-size: var(--font-size-base);
+    color: var(--white);
+    font-weight: 500;
+}
+
+.footer-column p {
+    color: var(--hsbc-gray);
+    font-size: var(--font-size-small);
+    line-height: 1.5;
+}
+
+.footer-bottom {
+    background: #1a1a1a;
+    padding: 20px 0;
+    text-align: center;
 }
 
 .footer-links {
     display: flex;
-    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    list-style: none;
+    margin-bottom: 20px;
+    padding: 0;
 }
 
 .footer-links a {
     color: var(--white);
     text-decoration: none;
-    opacity: 0.8;
-    transition: var(--transition);
+    font-size: 13px;
+    transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-    opacity: 1;
-    color: var(--light-red);
+    color: var(--hsbc-red);
+}
+
+.footer-legal {
+    color: var(--hsbc-gray);
+    font-size: 12px;
+}
+
+.footer-legal p {
+    margin-bottom: 3px;
+}
+
+/* Floating Chat Button */
+.floating-chat-widget {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    z-index: 999;
+}
+
+.chat-prompt {
+    background: var(--white);
+    padding: 10px 14px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--hsbc-black);
+    line-height: 1.4;
+    text-align: center;
+    animation: fadeInSlide 0.5s ease;
+}
+
+.chat-subtext {
+    font-size: 11px;
+    font-weight: 400;
+    color: #666666;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.floating-chat-btn {
+    padding: 12px 24px;
+    border-radius: 24px;
+    background: var(--white);
+    color: var(--hsbc-black);
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.floating-chat-btn:hover {
+    background: #f8f9fa;
+    border-color: var(--hsbc-red);
+    color: var(--hsbc-red);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.floating-chat-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.chat-text {
+    font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .footer-column::after {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 120px;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-column {
+        padding: 10px 0;
+    }
+
+    .footer-links {
+        gap: 16px;
+    }
+
+    .floating-chat-widget {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+@media (max-width: 568px) {
+    body {
+        padding-top: 110px;
+    }
+
+    .footer-main {
+        display: none;
+    }
 }
 
 /* Modal */

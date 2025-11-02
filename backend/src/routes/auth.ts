@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { getDb } from '../database/db';
+import prisma from '../database/prismaClient';
 import { LoginCredentials, ApiResponse, AuthToken, AdminPermission } from '../types';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 
@@ -17,8 +17,9 @@ router.post('/login', async (req, res: Response<ApiResponse<AuthToken>>) => {
   }
 
   try {
-  const db = await getDb();
-  const admin = db.data.admin_users.find((u: any) => (u.email || '').toLowerCase() === (email || '').toLowerCase());
+    const admin = await prisma.adminUser.findUnique({
+      where: { email: email.toLowerCase() }
+    });
 
     console.log('Login attempt for:', email);
     console.log('Admin found:', admin ? 'Yes' : 'No');
@@ -40,14 +41,16 @@ router.post('/login', async (req, res: Response<ApiResponse<AuthToken>>) => {
       return;
     }
 
-    if (!admin.is_active) {
+    if (!admin.isActive) {
       res.status(403).json({ success: false, error: 'Account is disabled' });
       return;
     }
 
     // Update last login
-    admin.last_login_at = new Date().toISOString();
-    await db.write();
+    await prisma.adminUser.update({
+      where: { id: admin.id },
+      data: { lastLoginAt: new Date() }
+    });
 
     // Generate JWT token
     const secret = process.env.JWT_SECRET || 'default-secret-change-this';
@@ -72,7 +75,7 @@ router.post('/login', async (req, res: Response<ApiResponse<AuthToken>>) => {
         user: {
           id: admin.id,
           email: admin.email,
-          fullName: admin.full_name,
+          fullName: admin.fullName,
           role: admin.role,
           permissions
         }

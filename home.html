@@ -100,7 +100,7 @@
                             <li class="header-main-navigation-item">
                                 <a href="/admin">
                                     <span class="header-main-navigation-title">Admin</span>
-                                    <span class="header-main-navigation-subtitle">Restricted</span>
+                                    <span class="header-main-navigation-subtitle">Dashboard</span>
                                 </a>
                             </li>
                         </ul>
@@ -634,6 +634,15 @@
             <span class="chat-text">Chat</span>
         </button>
     </div>
+
+    <!-- Socket.IO client from backend server -->
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    
+    <!-- Chat Session Manager -->
+    <script src="scripts/chatSession.js"></script>
+    
+    <!-- Header authentication helper -->
+    <script src="scripts/headerAuth.js"></script>
 
     <script src="scripts/home.js"></script>
 </body>

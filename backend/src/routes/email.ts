@@ -1,6 +1,5 @@
 import { Router, Response } from 'express';
-import { getDb } from '../database/db';
-import { v4 as uuidv4 } from 'uuid';
+import prisma from '../database/prismaClient';
 import { authenticateToken, requirePermission, AuthRequest } from '../middleware/auth';
 import { EmailTemplate, EmailThread, ApiResponse, PaginatedResponse } from '../types';
 import emailService from '../services/emailService';
@@ -15,10 +14,10 @@ const router = Router();
 // Get all email templates
 router.get('/templates', authenticateToken, requirePermission('manage_templates'), async (_req: AuthRequest, res: Response<ApiResponse<EmailTemplate[]>>) => {
   try {
-    const db = await getDb();
+    const templates = await prisma.emailTemplate.findMany();
     res.json({
       success: true,
-      data: db.data.email_templates
+      data: templates as any[]
     });
   } catch (error) {
     console.error('Get templates error:', error);
@@ -29,8 +28,9 @@ router.get('/templates', authenticateToken, requirePermission('manage_templates'
 // Get single email template
 router.get('/templates/:id', authenticateToken, requirePermission('manage_templates'), async (req: AuthRequest, res: Response<ApiResponse<EmailTemplate>>) => {
   try {
-    const db = await getDb();
-    const template = db.data.email_templates.find((t: any) => t.id === req.params.id);
+    const template = await prisma.emailTemplate.findUnique({
+      where: { id: req.params.id }
+    });
 
     if (!template) {
       res.status(404).json({ success: false, error: 'Template not found' });
@@ -39,7 +39,7 @@ router.get('/templates/:id', authenticateToken, requirePermission('manage_templa
 
     res.json({
       success: true,
-      data: template
+      data: template as any
     });
   } catch (error) {
     console.error('Get template error:', error);
@@ -50,7 +50,6 @@ router.get('/templates/:id', authenticateToken, requirePermission('manage_templa
 // Create email template
 router.post('/templates', authenticateToken, requirePermission('manage_templates'), async (req: AuthRequest, res: Response<ApiResponse<EmailTemplate>>) => {
   try {
-    const db = await getDb();
     const { name, subject, body, variables, category } = req.body;
 
     if (!name || !subject || !body || !category) {
@@ -58,24 +57,20 @@ router.post('/templates', authenticateToken, requirePermission('manage_templates
       return;
     }
 
-    const template: any = {
-      id: uuidv4(),
-      name,
-      subject,
-      body,
-      variables: variables || [],
-      category,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    db.data.email_templates.push(template);
-    await db.write();
+    const template = await prisma.emailTemplate.create({
+      data: {
+        name,
+        subject,
+        body,
+        variables: variables || [],
+        category,
+        isActive: true
+      }
+    });
 
     res.status(201).json({
       success: true,
-      data: template,
+      data: template as any,
       message: 'Template created successfully'
     });
   } catch (error) {
@@ -87,30 +82,24 @@ router.post('/templates', authenticateToken, requirePermission('manage_templates
 // Update email template
 router.patch('/templates/:id', authenticateToken, requirePermission('manage_templates'), async (req: AuthRequest, res: Response<ApiResponse<EmailTemplate>>) => {
   try {
-    const db = await getDb();
     const { name, subject, body, variables, category, isActive } = req.body;
     
-    const template = db.data.email_templates.find((t: any) => t.id === req.params.id);
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (subject) updateData.subject = subject;
+    if (body) updateData.body = body;
+    if (variables) updateData.variables = variables;
+    if (category) updateData.category = category;
+    if (isActive !== undefined) updateData.isActive = isActive;
 
-    if (!template) {
-      res.status(404).json({ success: false, error: 'Template not found' });
-      return;
-    }
-
-    if (name) template.name = name;
-    if (subject) template.subject = subject;
-    if (body) template.body = body;
-    if (variables) template.variables = variables;
-    if (category) template.category = category;
-    if (isActive !== undefined) template.is_active = isActive;
-
-    template.updated_at = new Date().toISOString();
-
-    await db.write();
+    const template = await prisma.emailTemplate.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
 
     res.json({
       success: true,
-      data: template,
+      data: template as any,
       message: 'Template updated successfully'
     });
   } catch (error) {
@@ -122,16 +111,9 @@ router.patch('/templates/:id', authenticateToken, requirePermission('manage_temp
 // Delete email template
 router.delete('/templates/:id', authenticateToken, requirePermission('manage_templates'), async (req: AuthRequest, res: Response<ApiResponse<void>>) => {
   try {
-    const db = await getDb();
-    const index = db.data.email_templates.findIndex((t: any) => t.id === req.params.id);
-
-    if (index === -1) {
-      res.status(404).json({ success: false, error: 'Template not found' });
-      return;
-    }
-
-    db.data.email_templates.splice(index, 1);
-    await db.write();
+    await prisma.emailTemplate.delete({
+      where: { id: req.params.id }
+    });
 
     res.json({
       success: true,
@@ -150,35 +132,30 @@ router.delete('/templates/:id', authenticateToken, requirePermission('manage_tem
 // Get all email threads
 router.get('/threads', authenticateToken, requirePermission('view_emails'), async (req: AuthRequest, res: Response<PaginatedResponse<EmailThread>>) => {
   try {
-    const db = await getDb();
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
-    const offset = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     const { status, priority, assignedTo } = req.query;
 
-    let threads = [...db.data.email_threads];
+    const where: any = {};
+    if (status) where.status = status;
+    if (priority) where.priority = priority;
+    if (assignedTo) where.assignedTo = assignedTo;
 
-    if (status) {
-      threads = threads.filter((t: any) => t.status === status);
-    }
-
-    if (priority) {
-      threads = threads.filter((t: any) => t.priority === priority);
-    }
-
-    if (assignedTo) {
-      threads = threads.filter((t: any) => t.assigned_to === assignedTo);
-    }
-
-    threads.sort((a: any, b: any) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime());
-
-    const total = threads.length;
-    const paginatedThreads = threads.slice(offset, offset + limit);
+    const [threads, total] = await Promise.all([
+      prisma.emailThread.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { lastMessageAt: 'desc' }
+      }),
+      prisma.emailThread.count({ where })
+    ]);
 
     res.json({
       success: true,
-      data: paginatedThreads,
+      data: threads as any[],
       pagination: {
         page,
         limit,
@@ -195,23 +172,23 @@ router.get('/threads', authenticateToken, requirePermission('view_emails'), asyn
 // Get single email thread with messages
 router.get('/threads/:id', authenticateToken, requirePermission('view_emails'), async (req: AuthRequest, res: Response<ApiResponse<any>>) => {
   try {
-    const db = await getDb();
-    const thread = db.data.email_threads.find((t: any) => t.id === req.params.id);
+    const thread = await prisma.emailThread.findUnique({
+      where: { id: req.params.id },
+      include: {
+        messages: {
+          orderBy: { sentAt: 'asc' }
+        }
+      }
+    });
 
     if (!thread) {
       res.status(404).json({ success: false, error: 'Email thread not found' });
       return;
     }
 
-    const messages = db.data.email_messages.filter((m: any) => m.thread_id === req.params.id);
-    messages.sort((a: any, b: any) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime());
-
     res.json({
       success: true,
-      data: {
-        ...thread,
-        messages
-      }
+      data: thread
     });
   } catch (error) {
     console.error('Get email thread error:', error);
@@ -222,7 +199,6 @@ router.get('/threads/:id', authenticateToken, requirePermission('view_emails'), 
 // Send email (Create new thread or reply to existing)
 router.post('/send', authenticateToken, requirePermission('send_emails'), async (req: AuthRequest, res: Response<ApiResponse<any>>) => {
   try {
-    const db = await getDb();
     const { to, subject, body, threadId, disputeId } = req.body;
 
     if (!to || !subject || !body) {
@@ -231,50 +207,55 @@ router.post('/send', authenticateToken, requirePermission('send_emails'), async 
     }
 
     let finalThreadId = threadId;
+    let message;
 
     // Create new thread if not provided
     if (!finalThreadId) {
-      finalThreadId = uuidv4();
+      const thread = await prisma.emailThread.create({
+        data: {
+          disputeId: disputeId || null,
+          customerEmail: to.toLowerCase(),
+          customerName: to.split('@')[0],
+          subject,
+          status: 'open',
+          assignedTo: req.user!.id,
+          priority: 'medium',
+          messages: {
+            create: {
+              fromAddress: req.user!.email,
+              toAddress: to.toLowerCase(),
+              subject,
+              body,
+              isFromCustomer: false
+            }
+          }
+        },
+        include: {
+          messages: true
+        }
+      });
       
-      const newThread: any = {
-        id: finalThreadId,
-        dispute_id: disputeId || null,
-        customer_email: to,
-        customer_name: to.split('@')[0],
-        subject,
-        last_message_at: new Date().toISOString(),
-        status: 'open',
-        assigned_to: req.user!.id,
-        priority: 'medium',
-        created_at: new Date().toISOString()
-      };
+      finalThreadId = thread.id;
+      message = thread.messages[0];
+    } else {
+      // Create message in existing thread
+      message = await prisma.emailMessage.create({
+        data: {
+          threadId: finalThreadId,
+          fromAddress: req.user!.email,
+          toAddress: to.toLowerCase(),
+          subject,
+          body,
+          isFromCustomer: false
+        }
+      });
 
-      db.data.email_threads.push(newThread);
+      // Update thread last message time
+      await prisma.emailThread.update({
+        where: { id: finalThreadId },
+        data: { lastMessageAt: new Date() }
+      });
     }
-
-    // Create email message
-    const message: any = {
-      id: uuidv4(),
-      thread_id: finalThreadId,
-      from_address: req.user!.email,
-      to_address: to,
-      subject,
-      body,
-      is_from_customer: false,
-      attachments: [],
-      sent_at: new Date().toISOString(),
-      read_at: null
-    };
-
-    db.data.email_messages.push(message);
-
-    // Update thread
-    const thread = db.data.email_threads.find((t: any) => t.id === finalThreadId);
-    if (thread) {
-      thread.last_message_at = new Date().toISOString();
-    }
-
-    await db.write();
 
     // Send actual email
     const sent = await emailService.sendEmail(to, subject, body);
@@ -293,25 +274,21 @@ router.post('/send', authenticateToken, requirePermission('send_emails'), async 
 // Update email thread
 router.patch('/threads/:id', authenticateToken, requirePermission('send_emails'), async (req: AuthRequest, res: Response<ApiResponse<EmailThread>>) => {
   try {
-    const db = await getDb();
     const { status, priority, assignedTo } = req.body;
     
-    const thread = db.data.email_threads.find((t: any) => t.id === req.params.id);
+    const updateData: any = {};
+    if (status) updateData.status = status;
+    if (priority) updateData.priority = priority;
+    if (assignedTo !== undefined) updateData.assignedTo = assignedTo;
 
-    if (!thread) {
-      res.status(404).json({ success: false, error: 'Thread not found' });
-      return;
-    }
-
-    if (status) thread.status = status;
-    if (priority) thread.priority = priority;
-    if (assignedTo !== undefined) thread.assigned_to = assignedTo;
-
-    await db.write();
+    const thread = await prisma.emailThread.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
 
     res.json({
       success: true,
-      data: thread,
+      data: thread as any,
       message: 'Email thread updated successfully'
     });
   } catch (error) {
@@ -320,14 +297,11 @@ router.patch('/threads/:id', authenticateToken, requirePermission('send_emails')
   }
 });
 
-export default router;
-
 // ==========================================
 // PUBLIC INCOMING EMAIL (from website form)
 // ==========================================
 router.post('/incoming', async (req, res: Response<ApiResponse<any>>) => {
   try {
-    const db = await getDb();
     const { email, subject, message, fullName } = req.body || {};
 
     if (!email || !subject || !message) {
@@ -335,51 +309,126 @@ router.post('/incoming', async (req, res: Response<ApiResponse<any>>) => {
       return;
     }
 
-    // Create a new thread for the customer email
-    const threadId = uuidv4();
-    const now = new Date().toISOString();
-    const thread: any = {
-      id: threadId,
-      dispute_id: null,
-      customer_email: email,
-      customer_name: fullName || email.split('@')[0],
-      subject,
-      last_message_at: now,
-      status: 'open',
-      assigned_to: null,
-      priority: 'medium',
-      created_at: now
-    };
-    db.data.email_threads.push(thread);
-
-    const msg: any = {
-      id: uuidv4(),
-      thread_id: threadId,
-      from_address: email,
-      to_address: 'support@disputeportal.com',
-      subject,
-      body: message,
-      is_from_customer: true,
-      attachments: [],
-      sent_at: now,
-      read_at: null
-    };
-    db.data.email_messages.push(msg);
-    await db.write();
+    // Create a new thread for the customer email with the message
+    const thread = await prisma.emailThread.create({
+      data: {
+        customerEmail: email.toLowerCase(),
+        customerName: fullName || email.split('@')[0],
+        subject,
+        status: 'open',
+        priority: 'medium',
+        messages: {
+          create: {
+            fromAddress: email.toLowerCase(),
+            toAddress: 'support@disputeportal.com',
+            subject,
+            body: message,
+            isFromCustomer: true
+          }
+        }
+      }
+    });
 
     // Notify admins via socket
     const io = getIO();
     io?.to('admin_room').emit('email_received', {
-      threadId,
+      threadId: thread.id,
       subject,
       from: email,
-      customerName: thread.customer_name,
-      receivedAt: now
+      customerName: thread.customerName,
+      receivedAt: thread.createdAt
     });
 
-    res.status(201).json({ success: true, data: { threadId } });
+    res.status(201).json({ success: true, data: { threadId: thread.id } });
   } catch (error) {
     console.error('Incoming email error:', error);
     res.status(500).json({ success: false, error: 'Failed to process incoming email' });
   }
 });
+
+// ==========================================
+// EMAIL CONFIGURATION & TESTING
+// ==========================================
+
+// Get email configuration status
+router.get('/config/status', authenticateToken, requirePermission('manage_templates'), async (_req: AuthRequest, res: Response) => {
+  try {
+    const config = emailService.getConfig();
+    const isConfigured = emailService.isConfigured();
+
+    res.json({
+      success: true,
+      data: {
+        configured: isConfigured,
+        provider: emailService.getProvider(),
+        config: config
+      }
+    });
+  } catch (error) {
+    console.error('Email config status error:', error);
+    res.status(500).json({ success: false, error: 'Failed to get email configuration status' });
+  }
+});
+
+// Test email connection
+router.post('/config/test-connection', authenticateToken, requirePermission('manage_templates'), async (_req: AuthRequest, res: Response) => {
+  try {
+    const result = await emailService.testConnection();
+    
+    res.json({
+      success: result.success,
+      message: result.message,
+      data: {
+        provider: emailService.getProvider(),
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error: any) {
+    console.error('Email connection test error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Connection test failed',
+      message: error.message || 'Unknown error'
+    });
+  }
+});
+
+// Send test email
+router.post('/config/test-send', authenticateToken, requirePermission('manage_templates'), async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { to } = req.body;
+
+    if (!to) {
+      res.status(400).json({ success: false, error: 'Recipient email address is required' });
+      return;
+    }
+
+    const sent = await emailService.sendTestEmail(to);
+
+    if (sent) {
+      res.json({
+        success: true,
+        message: `Test email sent successfully to ${to}`,
+        data: {
+          provider: emailService.getProvider(),
+          to,
+          timestamp: new Date().toISOString()
+        }
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to send test email. Check email configuration and logs.'
+      });
+    }
+  } catch (error: any) {
+    console.error('Send test email error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to send test email',
+      message: error.message || 'Unknown error'
+    });
+  }
+});
+
+export default router;

@@ -7,7 +7,34 @@
   <link rel="stylesheet" href="styles/main.css" />
   <style>
     /* Minimal admin styles leveraging existing main.css */
-    .admin-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .admin-container { 
+      max-width: 1400px; 
+      margin: 2rem auto; 
+      padding: 0 1rem;
+      margin-left: 250px;
+      margin-right: 250px;
+    }
+    
+    @media (max-width: 1400px) {
+      .admin-container {
+        margin-left: 150px;
+        margin-right: 150px;
+      }
+    }
+    
+    @media (max-width: 1024px) {
+      .admin-container {
+        margin-left: 50px;
+        margin-right: 50px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .admin-container {
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+    }
     .card { background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); padding: 1.25rem; margin-bottom: 1rem; }
     .tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .tab-btn { padding: .6rem .9rem; border-radius: 8px; border: 1px solid #eee; background: #f9fafb; cursor: pointer; }
@@ -22,7 +49,8 @@
     th { background: #f8fafc; font-weight: 600; }
     .form-row { display: flex; gap: .75rem; flex-wrap: wrap; }
     .form-row > * { flex: 1 1 250px; }
-    .right { display: flex; justify-content: flex-end; gap: .5rem; }
+  .right { display: flex; justify-content: flex-end; gap: .5rem; }
+  .admin-toast { position: fixed; right: 1rem; bottom: 1rem; display: none; z-index: 9999; }
   </style>
   <link rel="icon" href="data:," />
   <meta name="robots" content="noindex,nofollow" />
@@ -32,6 +60,7 @@
   <script defer src="scripts/api-client.js?v=20251029-1"></script>
   <!-- Socket.IO client for admin real-time notifications -->
   <script defer src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script defer src="scripts/chatSession.js"></script>
   <script defer src="scripts/admin.js?v=20251029-1"></script>
   <script>
     // Prevent caching during dev
@@ -77,14 +106,24 @@
         <div class="container">
           <nav aria-label="product line">
             <ul class="header-top-navigation">
-              <li class="header-top-navigation-item is-active">
-                <a href="/" aria-label="Dispute Portal">
-                  Dispute Portal
+              <li class="header-top-navigation-item">
+                <a href="/personal">
+                  Personal
                 </a>
               </li>
               <li class="header-top-navigation-item">
-                <a href="https://www.hsbc.co.uk" target="_blank" rel="noopener">
-                  HSBC UK
+                <a href="/private">
+                  Private
+                </a>
+              </li>
+              <li class="header-top-navigation-item">
+                <a href="/business">
+                  Business
+                </a>
+              </li>
+              <li class="header-top-navigation-item">
+                <a href="/corporate">
+                  Corporate
                 </a>
               </li>
             </ul>
@@ -116,7 +155,7 @@
           <div class="header-logo">
             <h1>
               <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
-              <span>Admin • HSBC UK</span>
+              <span><strong>HSBC</strong> UK</span>
             </h1>
           </div>
 
@@ -148,7 +187,7 @@
               <li class="header-main-navigation-item active">
                 <a href="/admin" aria-current="page">
                   <span class="header-main-navigation-title">Admin</span>
-                  <span class="header-main-navigation-subtitle">Restricted</span>
+                  <span class="header-main-navigation-subtitle">Dashboard</span>
                 </a>
               </li>
             </ul>
@@ -464,19 +503,102 @@
   </main>
 
   <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <p>&copy; 2025 HSBC Dispute Portal • Admin</p>
-        <div class="footer-links">
-          <a href="/">Home</a>
-          <a href="/track">Track</a>
-          <a href="#" id="scrollTop">Top</a>
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-column">
+            <div class="footer-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <h3>Help & Support</h3>
+            </div>
+            <p>Manage dispute cases with access to real-time data</p>
+          </div>
+
+          <div class="footer-column">
+            <div class="footer-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <h3>Operations</h3>
+            </div>
+            <p>Monitor disputed transactions across all business channels</p>
+          </div>
+
+          <div class="footer-column">
+            <div class="footer-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <h3>Compliance</h3>
+            </div>
+            <p>Ensure regulatory oversight and audit-ready reporting</p>
+          </div>
+
+          <div class="footer-column">
+            <div class="footer-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <h3>About HSBC</h3>
+            </div>
+            <p>HSBC UK Bank plc. Registered in England and Wales.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <nav aria-label="Footer navigation">
+          <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/track">Track Disputes</a></li>
+            <li><a href="/submit">Submit Dispute</a></li>
+            <li><a href="#" id="scrollTop">Back to top</a></li>
+          </ul>
+        </nav>
+        <div class="footer-legal">
+          <p>&copy; Copyright HSBC UK 2025. All rights reserved</p>
+          <p>Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority.</p>
         </div>
       </div>
     </div>
   </footer>
 
+  <!-- Floating Chat Button -->
+  <div class="floating-chat-widget">
+    <div class="chat-prompt">Hi, Need Help?<br><span class="chat-subtext">We're here if you need us</span></div>
+    <button class="floating-chat-btn" aria-label="Open live chat" title="Chat with us">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <span class="chat-text">Chat</span>
+    </button>
+  </div>
+
   <!-- Toast notifications -->
-  <div id="toast" style="position:fixed; right:1rem; bottom:1rem; display:none; z-index:9999;"></div>
+  <div id="toast" class="admin-toast"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const chatButton = document.querySelector('.floating-chat-btn');
+      const chatPrompt = document.querySelector('.chat-prompt');
+      const sessionManager = window.chatSessionManager;
+
+      if (!chatButton || !sessionManager) {
+        return;
+      }
+
+      if (sessionManager.hasActiveSession() && chatPrompt) {
+        chatPrompt.innerHTML = 'Resume Chat<br><span class="chat-subtext">Continue your conversation</span>';
+      }
+
+      chatButton.addEventListener('click', function () {
+        window.location.href = 'index.html#chat';
+      });
+    });
+  </script>
 </body>
 </html>

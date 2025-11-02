@@ -1,7 +1,6 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
-import { getDb } from '../database/db';
-import { v4 as uuidv4 } from 'uuid';
+import prisma from '../database/prismaClient';
 import { ChatMessage } from '../types';
 
 let ioInstance: SocketIOServer | null = null;
@@ -31,36 +30,37 @@ export function initializeSocketIO(httpServer: HTTPServer): SocketIOServer {
 
     // Join chat session
     socket.on('join_chat', async (data: { sessionId?: string | null; customerName: string; customerEmail?: string }) => {
-      const db = await getDb();
       let sessionId = (data.sessionId && data.sessionId !== 'null' && data.sessionId !== 'undefined') ? data.sessionId : undefined;
 
-      const ensureSession = () => {
-        const existing = sessionId ? db.data.chat_sessions.find((s: any) => s.id === sessionId) : null;
-        if (existing) {
-          existing.last_message_at = new Date().toISOString();
-          return existing.id;
+      const ensureSession = async () => {
+        // Check if existing session
+        if (sessionId) {
+          const existing = await prisma.chatSession.findUnique({
+            where: { id: sessionId }
+          });
+          if (existing) {
+            // Update last message time
+            await prisma.chatSession.update({
+              where: { id: sessionId },
+              data: { lastMessageAt: new Date() }
+            });
+            return existing.id;
+          }
         }
-        const newId = uuidv4();
-        const customerId = socket.id;
-        const now = new Date().toISOString();
-        const newSession: any = {
-          id: newId,
-          customer_id: customerId,
-          customer_name: data.customerName,
-          customer_email: data.customerEmail || null,
-          status: 'active',
-          assigned_to: null,
-          started_at: now,
-          ended_at: null,
-          last_message_at: now,
-          unread_count: 0
-        };
-        db.data.chat_sessions.push(newSession);
-        return newId;
+
+        // Create new session
+        const newSession = await prisma.chatSession.create({
+          data: {
+            customerId: socket.id,
+            customerName: data.customerName,
+            customerEmail: data.customerEmail || 'guest@example.com',
+            status: 'active'
+          }
+        });
+        return newSession.id;
       };
 
-      sessionId = ensureSession();
-      await db.write();
+      sessionId = await ensureSession();
       console.log(`✅ Chat session ready: ${sessionId}`);
 
       if (sessionId) {
@@ -78,43 +78,41 @@ export function initializeSocketIO(httpServer: HTTPServer): SocketIOServer {
 
     // Send chat message
     socket.on('send_message', async (data: { sessionId: string; text: string; isUser: boolean; adminId?: string }) => {
-      const db = await getDb();
-      const messageId = uuidv4();
-      const timestamp = new Date().toISOString();
+      const timestamp = new Date();
 
       const message: ChatMessage = {
-        id: messageId,
+        id: '',  // Will be set after creation
         sessionId: data.sessionId,
         text: data.text,
         isUser: data.isUser,
-        timestamp,
+        timestamp: timestamp.toISOString(),
         status: 'sent'
       };
 
       // Save to database
-      const dbMessage: any = {
-        id: messageId,
-        session_id: data.sessionId,
-        text: data.text,
-        is_user: data.isUser,
-        timestamp,
-        status: 'sent',
-        user_id: data.isUser ? socket.id : null,
-        admin_id: data.isUser ? null : (data.adminId || null)
-      };
-
-      db.data.chat_messages.push(dbMessage);
-
-      // Update session last message time
-      const session = db.data.chat_sessions.find((s: any) => s.id === data.sessionId);
-      if (session) {
-        session.last_message_at = timestamp;
-        if (data.isUser) {
-          session.unread_count = (session.unread_count || 0) + 1;
+      const dbMessage = await prisma.chatMessage.create({
+        data: {
+          sessionId: data.sessionId,
+          sender: data.isUser ? 'customer' : 'agent',
+          message: data.text,
+          isUser: data.isUser,
+          userId: data.isUser ? socket.id : null,
+          adminId: data.isUser ? null : (data.adminId || null)
         }
-      }
+      });
 
-      await db.write();
+      message.id = dbMessage.id;
+
+      // Update session last message time and unread count
+      const updateData: any = { lastMessageAt: timestamp };
+      if (data.isUser) {
+        updateData.unreadCount = { increment: 1 };
+      }
+      
+      await prisma.chatSession.update({
+        where: { id: data.sessionId },
+        data: updateData
+      });
 
       console.log(`💬 Message sent in session ${data.sessionId} by ${data.isUser ? 'user' : 'admin'}: "${data.text}"`);
 
@@ -144,16 +142,16 @@ export function initializeSocketIO(httpServer: HTTPServer): SocketIOServer {
 
     // Admin joins specific chat session
     socket.on('admin_join_session', async (data: { sessionId: string; adminId: string }) => {
-      const db = await getDb();
       socket.join(data.sessionId);
 
-      // Assign admin to session
-      const session = db.data.chat_sessions.find((s: any) => s.id === data.sessionId);
-      if (session) {
-        session.assigned_to = data.adminId;
-        session.unread_count = 0;
-        await db.write();
-      }
+      // Assign admin to session and reset unread count
+      await prisma.chatSession.update({
+        where: { id: data.sessionId },
+        data: {
+          assignedTo: data.adminId,
+          unreadCount: 0
+        }
+      });
 
       // Notify customer
       io.to(data.sessionId).emit('admin_joined', {
@@ -172,30 +170,27 @@ export function initializeSocketIO(httpServer: HTTPServer): SocketIOServer {
 
     // Mark messages as read
     socket.on('mark_read', async (data: { sessionId: string }) => {
-      const db = await getDb();
-      
-      // Update all messages in session to read
-      db.data.chat_messages.forEach((m: any) => {
-        if (m.session_id === data.sessionId && m.status !== 'read') {
-          m.status = 'read';
-        }
+      // Update all unread messages in session to read
+      await prisma.chatMessage.updateMany({
+        where: {
+          sessionId: data.sessionId,
+          status: { not: 'read' }
+        },
+        data: { status: 'read' }
       });
-
-      await db.write();
 
       io.to(data.sessionId).emit('messages_read', { sessionId: data.sessionId });
     });
 
     // Close chat session
     socket.on('close_chat', async (data: { sessionId: string }) => {
-      const db = await getDb();
-      
-      const session = db.data.chat_sessions.find((s: any) => s.id === data.sessionId);
-      if (session) {
-        session.status = 'closed';
-        session.ended_at = new Date().toISOString();
-        await db.write();
-      }
+      await prisma.chatSession.update({
+        where: { id: data.sessionId },
+        data: {
+          status: 'closed',
+          endedAt: new Date()
+        }
+      });
 
       io.to(data.sessionId).emit('chat_closed', { sessionId: data.sessionId });
       socket.leave(data.sessionId);

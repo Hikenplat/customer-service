@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  fullName    String
+  role        String    @default("admin")
+  permissions String[]
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("admin_users")
+}
+
+model Dispute {
+  id                 String    @id @default(uuid())
+  referenceNumber    String    @unique
+  customerName       String
+  customerEmail      String
+  customerPhone      String?
+  transactionAmount  Float
+  transactionDate    String
+  currency           String    @default("USD")
+  merchantName       String
+  description        String
+  accountStatement   String?
+  authorizationStatus String?
+  status             String    @default("pending")
+  priority           String    @default("normal")
+  assignedTo         String?
+  resolution         String?
+  resolvedAt         DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  chatSessions ChatSession[]
+  fileUploads  FileUpload[]
+  emailThreads EmailThread[]
+
+  @@map("disputes")
+}
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  name      String
+  subject   String
+  body      String
+  variables String[]
+  category  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+model EmailThread {
+  id             String    @id @default(uuid())
+  disputeId      String?
+  dispute        Dispute?  @relation(fields: [disputeId], references: [id], onDelete: SetNull)
+  customerName   String
+  customerEmail  String
+  subject        String
+  status         String    @default("open")
+  priority       String    @default("medium")
+  assignedTo     String?
+  lastMessageAt  DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  messages EmailMessage[]
+
+  @@map("email_threads")
+}
+
+model EmailMessage {
+  id              String      @id @default(uuid())
+  threadId        String
+  thread          EmailThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  fromAddress     String
+  toAddress       String
+  subject         String
+  body            String
+  isFromCustomer  Boolean     @default(false)
+  isRead          Boolean     @default(false)
+  sentAt          DateTime    @default(now())
+  readAt          DateTime?
+
+  @@map("email_messages")
+}
+
+model ChatSession {
+  id             String    @id @default(uuid())
+  disputeId      String?
+  dispute        Dispute?  @relation(fields: [disputeId], references: [id], onDelete: SetNull)
+  customerId     String?
+  customerName   String
+  customerEmail  String
+  status         String    @default("active")
+  assignedTo     String?
+  unreadCount    Int       @default(0)
+  lastMessageAt  DateTime  @default(now())
+  startedAt      DateTime  @default(now())
+  endedAt        DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  messages ChatMessage[]
+
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String      @id @default(uuid())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sender    String
+  message   String
+  isUser    Boolean     @default(false)
+  userId    String?
+  adminId   String?
+  status    String      @default("sent")
+  timestamp DateTime    @default(now())
+
+  @@map("chat_messages")
+}
+
+model FileUpload {
+  id          String   @id @default(uuid())
+  disputeId   String?
+  dispute     Dispute? @relation(fields: [disputeId], references: [id], onDelete: SetNull)
+  fileName    String
+  originalName String
+  filePath    String
+  mimeType    String
+  size        Int
+  uploadedBy  String?
+  uploadedAt  DateTime @default(now())
+
+  @@map("file_uploads")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("info")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}

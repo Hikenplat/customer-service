@@ -19,7 +19,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Import database and socket
-import { initializeDatabase } from './database/db';
+import { initializePrismaDatabase } from './database/prismaClient';
 import { initializeSocketIO } from './socket/chatSocket';
 
 // Import routes
@@ -154,7 +154,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 // Initialize database and start server
 const PORT = process.env.PORT || 5000;
 
-initializeDatabase().then(() => {
+initializePrismaDatabase().then(() => {
   httpServer.listen(PORT, () => {
     console.log('╔═══════════════════════════════════════════════════════════╗');
     console.log('║                                                           ║');
@@ -163,7 +163,7 @@ initializeDatabase().then(() => {
     console.log('╠═══════════════════════════════════════════════════════════╣');
     console.log(`║  Server:         http://localhost:${PORT}                    ║`);
     console.log('║  WebSocket:      ✅ Socket.IO Connected                    ║');
-    console.log('║  Database:       ✅ lowdb JSON Database                   ║');
+    console.log('║  Database:       ✅ Prisma PostgreSQL                    ║');
     console.log('╠═══════════════════════════════════════════════════════════╣');
     console.log('║  PAGES:                                                   ║');
     console.log(`║  • Home:         http://localhost:${PORT}/                   ║`);

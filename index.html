@@ -14,14 +14,24 @@
                 <div class="container">
                     <nav aria-label="product line">
                         <ul class="header-top-navigation">
-                            <li class="header-top-navigation-item is-active">
-                                <a href="/" aria-label="Dispute Portal currently selected">
-                                    Dispute Portal
+                            <li class="header-top-navigation-item">
+                                <a href="/personal">
+                                    Personal
                                 </a>
                             </li>
                             <li class="header-top-navigation-item">
-                                <a href="https://www.hsbc.co.uk" target="_blank" rel="noopener">
-                                    HSBC UK
+                                <a href="/private">
+                                    Private
+                                </a>
+                            </li>
+                            <li class="header-top-navigation-item">
+                                <a href="/business">
+                                    Business
+                                </a>
+                            </li>
+                            <li class="header-top-navigation-item">
+                                <a href="/corporate">
+                                    Corporate
                                 </a>
                             </li>
                         </ul>
@@ -53,7 +63,7 @@
                     <div class="header-logo">
                         <h1>
                             <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
-                            <span>HSBC UK</span>
+                            <span><strong>HSBC</strong> UK</span>
                         </h1>
                     </div>
 
@@ -87,7 +97,7 @@
                             <li class="header-main-navigation-item">
                                 <a href="/admin">
                                     <span class="header-main-navigation-title">Admin</span>
-                                    <span class="header-main-navigation-subtitle">Restricted</span>
+                                    <span class="header-main-navigation-subtitle">Dashboard</span>
                                 </a>
                             </li>
                         </ul>
@@ -390,13 +400,66 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; 2025 HSBC Dispute Portal. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="#privacy">Privacy Policy</a>
-                    <a href="#terms">Terms of Service</a>
-                    <a href="#security">Security</a>
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+                <div class="footer-column">
+                    <div class="footer-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                        <h3>Help & Support</h3>
+                    </div>
+                    <p>Got a question? We're here to help you</p>
+                </div>
+
+                <div class="footer-column">
+                    <div class="footer-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                        <h3>Branch Finder</h3>
+                    </div>
+                    <p>Find your nearest branch</p>
+                </div>
+
+                <div class="footer-column">
+                    <div class="footer-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                        <h3>Our Service Performance</h3>
+                    </div>
+                    <p>View our service status to see how we're doing</p>
+                </div>
+
+                <div class="footer-column">
+                    <div class="footer-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                        <h3>About HSBC</h3>
+                    </div>
+                    <p>Careers, Media, Investors and corporate information</p>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <nav aria-label="Footer navigation">
+                    <ul class="footer-links">
+                        <li><a href="#legal">Legal</a></li>
+                        <li><a href="#privacy">Privacy Notice</a></li>
+                        <li><a href="#cookies">Cookie Notice</a></li>
+                        <li><a href="#accessibility">Accessibility</a></li>
+                        <li><a href="#security">Security</a></li>
+                    </ul>
+                </nav>
+                <div class="footer-legal">
+                    <p>&copy; Copyright HSBC UK 2025. All rights reserved</p>
+                    <p>HSBC UK Bank plc. Registered in England and Wales.</p>
                 </div>
             </div>
         </div>
@@ -417,9 +480,24 @@
         </div>
     </div>
 
+    <!-- Floating Chat Button -->
+    <div class="floating-chat-widget">
+        <div class="chat-prompt">Hi, Need Help?<br><span class="chat-subtext">We're here if you need us</span></div>
+        <button class="floating-chat-btn" aria-label="Open live chat" title="Chat with us">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span class="chat-text">Chat</span>
+        </button>
+    </div>
+
     <script src="scripts/api-client.js?v=20251029-1"></script>
     <!-- Socket.IO client from backend server -->
     <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <!-- Chat Session Manager -->
+    <script src="scripts/chatSession.js"></script>
+    <!-- Header authentication helper -->
+    <script src="scripts/headerAuth.js"></script>
     <script src="scripts/app.js?v=20251029-1"></script>
 </body>
 </html>

@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-gb" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track Your Dispute • HSBC Dispute Portal</title>
+    <title>Track Your Dispute • HSBC UK Payment Dispute Portal</title>
+    <meta name="description" content="Track your payment dispute status with HSBC UK. Check the progress of your claim using your reference number.">
+    
+    <link rel="icon" type="image/png" href="/content/dam/hsbc/gb/images/logos/favicon-32x32.png" sizes="32x32">
     <link rel="stylesheet" href="styles/main.css">
     <style>
+        /* Track page specific styles */
+        main {
+            padding-top: 2rem;
+        }
+        
         .track-container {
             max-width: 600px;
-            margin: 4rem auto;
-            padding: 0 1rem;
+            margin: 0 auto;
+            padding: 2rem 1rem;
         }
         .track-card {
             background: #fff;
@@ -74,7 +82,7 @@
             padding: 1rem;
             background: #f9fafb;
             border-radius: 8px;
-            border-left: 4px solid #111827;
+            border-left: 4px solid #B8102E;
         }
         .info-label {
             font-size: 0.85rem;
@@ -107,12 +115,45 @@
         }
         .spinner {
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #111827;
+            border-top: 3px solid #B8102E;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
             margin: 0 auto;
+        }
+        .track-submit-btn {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .track-loading-text {
+            margin-top: 1rem;
+            color: #6b7280;
+        }
+        .track-result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .track-result-header h2 {
+            margin-bottom: 0.5rem;
+        }
+        .track-result-header p {
+            color: #6b7280;
+        }
+        .track-status-wrapper {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .track-status-wrapper .status-badge {
+            margin-top: 0.5rem;
+        }
+        .resolution-info {
+            display: none;
+            grid-column: 1 / -1;
+            border-left-color: #10b981;
+        }
+        .track-form-help {
+            color: #6b7280;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -121,20 +162,31 @@
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header class="header" role="banner">
         <div class="header-top-container">
             <div class="header-top">
                 <div class="container">
                     <nav aria-label="product line">
                         <ul class="header-top-navigation">
-                            <li class="header-top-navigation-item is-active">
-                                <a href="/" aria-label="Dispute Portal">
-                                    Dispute Portal
+                            <li class="header-top-navigation-item">
+                                <a href="/personal">
+                                    Personal
                                 </a>
                             </li>
                             <li class="header-top-navigation-item">
-                                <a href="https://www.hsbc.co.uk" target="_blank" rel="noopener">
-                                    HSBC UK
+                                <a href="/private">
+                                    Private
+                                </a>
+                            </li>
+                            <li class="header-top-navigation-item">
+                                <a href="/business">
+                                    Business
+                                </a>
+                            </li>
+                            <li class="header-top-navigation-item">
+                                <a href="/corporate">
+                                    Corporate
                                 </a>
                             </li>
                         </ul>
@@ -166,7 +218,7 @@
                     <div class="header-logo">
                         <h1>
                             <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
-                            <span>HSBC UK</span>
+                            <span><strong>HSBC</strong> UK</span>
                         </h1>
                     </div>
 
@@ -200,7 +252,7 @@
                             <li class="header-main-navigation-item">
                                 <a href="/admin">
                                     <span class="header-main-navigation-title">Admin</span>
-                                    <span class="header-main-navigation-subtitle">Restricted</span>
+                                    <span class="header-main-navigation-subtitle">Dashboard</span>
                                 </a>
                             </li>
                         </ul>
@@ -210,8 +262,9 @@
         </div>
     </header>
 
-    <main class="track-container">
-        <div class="track-card">
+    <main class="main-content">
+        <div class="track-container">
+            <div class="track-card">
             <div class="track-header">
                 <h1>Track Your Dispute</h1>
                 <p>Enter your reference number and email to check the status of your dispute</p>
@@ -230,7 +283,7 @@
                         pattern="DSP-\d+"
                         title="Format: DSP-1234567890"
                     />
-                    <small style="color: #6b7280;">Format: DSP-1234567890 (found in your confirmation email)</small>
+                    <small class="track-form-help">Format: DSP-1234567890 (found in your confirmation email)</small>
                 </div>
 
                 <div class="form-field">
@@ -242,10 +295,10 @@
                         placeholder="your@email.com" 
                         required
                     />
-                    <small style="color: #6b7280;">The email you used when submitting the dispute</small>
+                    <small class="track-form-help">The email you used when submitting the dispute</small>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary track-submit-btn">
                     Track Dispute
                 </button>
             </form>
@@ -253,7 +306,7 @@
             <!-- Loading State -->
             <div id="loading" class="loading">
                 <div class="spinner"></div>
-                <p style="margin-top: 1rem; color: #6b7280;">Searching for your dispute...</p>
+                <p class="track-loading-text">Searching for your dispute...</p>
             </div>
 
             <!-- Error Message -->
@@ -261,14 +314,14 @@
 
             <!-- Track Result -->
             <div id="trackResult" class="track-result">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h2 style="margin-bottom: 0.5rem;">Dispute Found!</h2>
-                    <p style="color: #6b7280;">Reference: <strong id="resultRef"></strong></p>
+                <div class="track-result-header">
+                    <h2>Dispute Found!</h2>
+                    <p>Reference: <strong id="resultRef"></strong></p>
                 </div>
 
-                <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="track-status-wrapper">
                     <div class="info-label">Current Status</div>
-                    <div id="statusBadge" class="status-badge" style="margin-top: 0.5rem;"></div>
+                    <div id="statusBadge" class="status-badge"></div>
                 </div>
 
                 <div class="info-grid">
@@ -297,7 +350,7 @@
                         <div class="info-value" id="resultUpdated"></div>
                     </div>
 
-                    <div id="resolutionInfo" class="info-item" style="display: none; grid-column: 1 / -1; border-left-color: #10b981;">
+                    <div id="resolutionInfo" class="info-item resolution-info">
                         <div class="info-label">Resolution</div>
                         <div class="info-value" id="resultResolution"></div>
                     </div>
@@ -310,22 +363,95 @@
                 </div>
             </div>
         </div>
+        </div>
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; 2025 HSBC Dispute Portal</p>
-                <div class="footer-links">
-                    <a href="/">Submit Dispute</a>
-                    <a href="/track">Track Dispute</a>
-                    <a href="/admin">Admin</a>
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-column">
+                        <div class="footer-title">
+                            <h3>Help & Support</h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                        <p>Got a question? We're here to help you</p>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-title">
+                            <h3>Branch Finder</h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                        <p>Find your nearest branch</p>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-title">
+                            <h3>Our Service Performance</h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                        <p>View our service status to see how we're doing</p>
+                    </div>
+
+                    <div class="footer-column">
+                        <div class="footer-title">
+                            <h3>About HSBC</h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                        <p>Careers, Media, Investors and corporate information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <nav aria-label="Footer navigation">
+                    <ul class="footer-links">
+                        <li><a href="#legal">Legal</a></li>
+                        <li><a href="#privacy">Privacy Notice</a></li>
+                        <li><a href="#cookies">Cookie Notice</a></li>
+                        <li><a href="#accessibility">Accessibility</a></li>
+                        <li><a href="#security">Security</a></li>
+                    </ul>
+                </nav>
+                <div class="footer-legal">
+                    <p>&copy; Copyright HSBC UK 2025. All rights reserved</p>
+                    <p>HSBC UK Bank plc. Registered in England and Wales.</p>
                 </div>
             </div>
         </div>
     </footer>
 
+    <!-- Floating Chat Button -->
+    <div class="floating-chat-widget">
+        <div class="chat-prompt">Hi, Need Help?<br><span class="chat-subtext">We're here if you need us</span></div>
+        <button class="floating-chat-btn" aria-label="Open live chat" title="Chat with us">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span class="chat-text">Chat</span>
+        </button>
+    </div>
+
+    <!-- Header authentication helper -->
     <script src="scripts/api-client.js?v=20251029-1"></script>
+    <!-- Socket.IO client from backend server -->
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <!-- Chat Session Manager -->
+    <script src="scripts/chatSession.js"></script>
+    <script src="scripts/headerAuth.js"></script>
+    <script src="scripts/home.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const trackForm = document.getElementById('trackForm');

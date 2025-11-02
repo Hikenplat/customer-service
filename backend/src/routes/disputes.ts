@@ -1,6 +1,5 @@
 import { Router, Response } from 'express';
-import { getDb } from '../database/db';
-import { v4 as uuidv4 } from 'uuid';
+import prisma from '../database/prismaClient';
 import { authenticateToken, requirePermission, AuthRequest } from '../middleware/auth';
 import { upload } from '../middleware/upload';
 import { DisputeRecord, ApiResponse, PaginatedResponse, DisputeFilters } from '../types';
@@ -11,7 +10,6 @@ const router = Router();
 // Track dispute by reference number (PUBLIC - no auth required)
 router.post('/track', async (req, res: Response<ApiResponse<any>>) => {
   try {
-    const db = await getDb();
     const { referenceNumber, email } = req.body;
 
     if (!referenceNumber || !email) {
@@ -20,10 +18,12 @@ router.post('/track', async (req, res: Response<ApiResponse<any>>) => {
     }
 
     // Find dispute by reference number and verify email matches
-    const dispute = db.data.disputes.find(
-      (d: any) => d.reference_number === referenceNumber && 
-                  d.email.toLowerCase() === email.toLowerCase()
-    );
+    const dispute = await prisma.dispute.findFirst({
+      where: {
+        referenceNumber,
+        customerEmail: email.toLowerCase()
+      }
+    });
 
     if (!dispute) {
       res.status(404).json({ success: false, error: 'Dispute not found or email does not match' });
@@ -32,15 +32,15 @@ router.post('/track', async (req, res: Response<ApiResponse<any>>) => {
 
     // Return limited info (don't expose sensitive data)
     const trackingInfo = {
-      reference_number: dispute.reference_number,
+      reference_number: dispute.referenceNumber,
       status: dispute.status,
       priority: dispute.priority,
-      transaction_date: dispute.transaction_date,
-      transaction_amount: dispute.transaction_amount,
+      transaction_date: dispute.transactionDate,
+      transaction_amount: dispute.transactionAmount,
       currency: dispute.currency,
-      created_at: dispute.created_at,
-      updated_at: dispute.updated_at,
-      resolved_at: dispute.resolved_at,
+      created_at: dispute.createdAt,
+      updated_at: dispute.updatedAt,
+      resolved_at: dispute.resolvedAt,
       resolution: dispute.resolution
     };
 
@@ -58,7 +58,6 @@ router.post('/track', async (req, res: Response<ApiResponse<any>>) => {
 // Submit new dispute (PUBLIC - no auth required)
 router.post('/', upload.array('documents', 10), async (req, res: Response<ApiResponse<DisputeRecord>>) => {
   try {
-    const db = await getDb();
     const {
       transactionDate,
       transactionAmount,
@@ -78,99 +77,86 @@ router.post('/', upload.array('documents', 10), async (req, res: Response<ApiRes
       return;
     }
 
-    const id = uuidv4();
     const referenceNumber = `DSP-${Date.now()}`;
     const files = req.files as any[];
     
-    // Save file information
-    const attachments: string[] = [];
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const fileId = uuidv4();
-        const fileRecord = {
-          id: fileId,
-          filename: file.filename,
-          original_name: file.originalname,
-          mimetype: file.mimetype,
-          size: file.size,
-          path: file.path,
-          uploaded_by: email,
-          dispute_id: id,
-          created_at: new Date().toISOString()
-        };
-        db.data.file_uploads.push(fileRecord);
-        attachments.push(file.filename);
+    // Create dispute with nested file uploads and email thread
+    const dispute = await prisma.dispute.create({
+      data: {
+        referenceNumber,
+        transactionDate,
+        transactionAmount: parseFloat(transactionAmount),
+        currency,
+        customerName: fullName,
+        customerEmail: email.toLowerCase(),
+        customerPhone: phone || null,
+        merchantName: role,
+        description: disputeDescription,
+        accountStatement: accountStatement || null,
+        authorizationStatus: authorizationStatus || null,
+        status: 'pending',
+        priority: 'medium',
+        fileUploads: files && files.length > 0 ? {
+          create: files.map((file: any) => ({
+            fileName: file.filename,
+            originalName: file.originalname,
+            filePath: file.path,
+            mimeType: file.mimetype,
+            size: file.size,
+            uploadedBy: email
+          }))
+        } : undefined,
+        emailThreads: {
+          create: {
+            customerEmail: email.toLowerCase(),
+            customerName: fullName,
+            subject: `Dispute ${referenceNumber} - Payment Dispute`,
+            status: 'open',
+            priority: 'medium'
+          }
+        }
+      },
+      include: {
+        fileUploads: true,
+        emailThreads: true
       }
-    }
-
-    // Insert dispute
-    const dispute: any = {
-      id,
-      reference_number: referenceNumber,
-      transaction_date: transactionDate,
-      transaction_amount: parseFloat(transactionAmount),
-      currency,
-      role,
-      authorization_status: authorizationStatus,
-      dispute_description: disputeDescription,
-      account_statement: accountStatement || null,
-      full_name: fullName,
-      email,
-      phone: phone || null,
-      status: 'pending',
-      priority: 'medium',
-      attachments,
-      assigned_to: null,
-      resolution: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      resolved_at: null
-    };
-
-    db.data.disputes.push(dispute);
+    });
 
     // Check if there's an existing chat session for this customer email
     // and link it to this dispute
-    const existingChatSession = db.data.chat_sessions.find(
-      (session: any) => session.customer_email?.toLowerCase() === email.toLowerCase() && session.status === 'active'
-    );
+    const existingChatSession = await prisma.chatSession.findFirst({
+      where: {
+        customerEmail: email.toLowerCase(),
+        status: 'active'
+      }
+    });
     
     let linkedChatSessionId: string | null = null;
     if (existingChatSession) {
       // Link the chat session to this dispute
-      existingChatSession.dispute_id = id;
-      existingChatSession.customer_name = fullName; // Update name if they filled dispute form
+      await prisma.chatSession.update({
+        where: { id: existingChatSession.id },
+        data: {
+          disputeId: dispute.id,
+          customerName: fullName
+        }
+      });
       linkedChatSessionId = existingChatSession.id;
       console.log(`✅ Linked existing chat session ${linkedChatSessionId} to dispute ${referenceNumber}`);
     }
 
-    // Create an associated email thread for this dispute
-    const threadId = uuidv4();
-    const emailThread: any = {
-      id: threadId,
-      dispute_id: id,
-      customer_email: email,
-      customer_name: fullName,
-      subject: `Dispute ${referenceNumber} - Payment Dispute`,
-      last_message_at: new Date().toISOString(),
-      status: 'open',
-      assigned_to: null,
-      priority: dispute.priority,
-      created_at: new Date().toISOString()
-    };
-    db.data.email_threads.push(emailThread);
-
-    await db.write();
-
     // Send confirmation email
-    const template = db.data.email_templates.find(
-      (t: any) => t.category === 'dispute_confirmation' && t.is_active
-    );
+    const template = await prisma.emailTemplate.findFirst({
+      where: {
+        category: 'dispute_confirmation',
+        isActive: true
+      }
+    });
 
     if (template) {
       await emailService.sendTemplateEmail(
         email,
-        template,
+        template as any,
         {
           customerName: fullName,
           referenceNumber,
@@ -182,7 +168,11 @@ router.post('/', upload.array('documents', 10), async (req, res: Response<ApiRes
 
     res.status(201).json({
       success: true,
-      data: { ...dispute, threadId, linkedChatSessionId },
+      data: { 
+        ...dispute, 
+        threadId: dispute.emailThreads[0]?.id, 
+        linkedChatSessionId 
+      } as any,
       message: 'Dispute submitted successfully'
     });
   } catch (error) {
@@ -194,54 +184,55 @@ router.post('/', upload.array('documents', 10), async (req, res: Response<ApiRes
 // Get all disputes (ADMIN)
 router.get('/', authenticateToken, requirePermission('view_disputes'), async (req: AuthRequest, res: Response<PaginatedResponse<DisputeRecord>>) => {
   try {
-    const db = await getDb();
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
-    const offset = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     const { status, priority, assignedTo, dateFrom, dateTo, searchTerm }: Partial<DisputeFilters> = req.query;
 
-    let disputes = [...db.data.disputes];
+    // Build where clause
+    const where: any = {};
 
-    // Apply filters
     if (status) {
-      disputes = disputes.filter((d: any) => d.status === status);
+      where.status = status;
     }
 
     if (priority) {
-      disputes = disputes.filter((d: any) => d.priority === priority);
+      where.priority = priority;
     }
 
     if (assignedTo) {
-      disputes = disputes.filter((d: any) => d.assigned_to === assignedTo);
+      where.assignedTo = assignedTo;
     }
 
-    if (dateFrom) {
-      disputes = disputes.filter((d: any) => d.created_at >= dateFrom);
-    }
-
-    if (dateTo) {
-      disputes = disputes.filter((d: any) => d.created_at <= dateTo);
+    if (dateFrom || dateTo) {
+      where.createdAt = {};
+      if (dateFrom) where.createdAt.gte = new Date(dateFrom as string);
+      if (dateTo) where.createdAt.lte = new Date(dateTo as string);
     }
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      disputes = disputes.filter((d: any) => 
-        d.reference_number.toLowerCase().includes(term) ||
-        d.full_name.toLowerCase().includes(term) ||
-        d.email.toLowerCase().includes(term)
-      );
+      where.OR = [
+        { referenceNumber: { contains: term, mode: 'insensitive' } },
+        { customerName: { contains: term, mode: 'insensitive' } },
+        { customerEmail: { contains: term, mode: 'insensitive' } }
+      ];
     }
 
-    // Sort by created_at DESC
-    disputes.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-    const total = disputes.length;
-    const paginatedDisputes = disputes.slice(offset, offset + limit);
+    const [disputes, total] = await Promise.all([
+      prisma.dispute.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.dispute.count({ where })
+    ]);
 
     res.json({
       success: true,
-      data: paginatedDisputes,
+      data: disputes as any[],
       pagination: {
         page,
         limit,
@@ -258,10 +249,19 @@ router.get('/', authenticateToken, requirePermission('view_disputes'), async (re
 // Get single dispute
 router.get('/:id', authenticateToken, requirePermission('view_disputes'), async (req: AuthRequest, res: Response<ApiResponse<DisputeRecord>>) => {
   try {
-    const db = await getDb();
-    const dispute = db.data.disputes.find(
-      (d: any) => d.id === req.params.id || d.reference_number === req.params.id
-    );
+    const dispute = await prisma.dispute.findFirst({
+      where: {
+        OR: [
+          { id: req.params.id },
+          { referenceNumber: req.params.id }
+        ]
+      },
+      include: {
+        fileUploads: true,
+        emailThreads: true,
+        chatSessions: true
+      }
+    });
 
     if (!dispute) {
       res.status(404).json({ success: false, error: 'Dispute not found' });
@@ -270,7 +270,7 @@ router.get('/:id', authenticateToken, requirePermission('view_disputes'), async 
 
     res.json({
       success: true,
-      data: dispute
+      data: dispute as any
     });
   } catch (error) {
     console.error('Get dispute error:', error);
@@ -281,46 +281,52 @@ router.get('/:id', authenticateToken, requirePermission('view_disputes'), async 
 // Update dispute (ADMIN)
 router.patch('/:id', authenticateToken, requirePermission('manage_disputes'), async (req: AuthRequest, res: Response<ApiResponse<DisputeRecord>>) => {
   try {
-    const db = await getDb();
     const { status, priority, assignedTo, resolution } = req.body;
     
-    const dispute = db.data.disputes.find((d: any) => d.id === req.params.id);
+    // Get existing dispute
+    const existingDispute = await prisma.dispute.findUnique({
+      where: { id: req.params.id }
+    });
 
-    if (!dispute) {
+    if (!existingDispute) {
       res.status(404).json({ success: false, error: 'Dispute not found' });
       return;
     }
 
     // Track if status changed for email notification
-    const statusChanged = status && status !== dispute.status;
-    const oldStatus = dispute.status;
+    const statusChanged = status && status !== existingDispute.status;
+    const oldStatus = existingDispute.status;
 
-    // Apply updates
+    // Build update data
+    const updateData: any = {};
+
     if (status) {
-      dispute.status = status;
+      updateData.status = status;
       if (status === 'resolved') {
-        dispute.resolved_at = new Date().toISOString();
+        updateData.resolvedAt = new Date();
       }
     }
 
     if (priority) {
-      dispute.priority = priority;
+      updateData.priority = priority;
     }
 
     if (assignedTo !== undefined) {
-      dispute.assigned_to = assignedTo;
+      updateData.assignedTo = assignedTo;
     }
 
     if (resolution) {
-      dispute.resolution = resolution;
+      updateData.resolution = resolution;
     }
 
-    dispute.updated_at = new Date().toISOString();
-
-    await db.write();
+    // Update dispute
+    const dispute = await prisma.dispute.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
 
     // Send email notification if status changed
-    if (statusChanged && dispute.email) {
+    if (statusChanged && dispute.customerEmail) {
       try {
         // Find appropriate template based on new status
         let templateCategory = 'status_update';
@@ -328,9 +334,12 @@ router.patch('/:id', authenticateToken, requirePermission('manage_disputes'), as
           templateCategory = 'resolution';
         }
 
-        const template = db.data.email_templates.find(
-          (t: any) => t.category === templateCategory && t.isActive
-        );
+        const template = await prisma.emailTemplate.findFirst({
+          where: {
+            category: templateCategory,
+            isActive: true
+          }
+        });
 
         if (template) {
           const statusLabels: Record<string, string> = {
@@ -341,20 +350,20 @@ router.patch('/:id', authenticateToken, requirePermission('manage_disputes'), as
           };
 
           await emailService.sendTemplateEmail(
-            dispute.email,
-            template,
+            dispute.customerEmail,
+            template as any,
             {
-              customerName: dispute.full_name || 'Valued Customer',
-              referenceNumber: dispute.reference_number,
+              customerName: dispute.customerName || 'Valued Customer',
+              referenceNumber: dispute.referenceNumber,
               oldStatus: statusLabels[oldStatus] || oldStatus,
               newStatus: statusLabels[status] || status,
               resolution: resolution || dispute.resolution || 'Our team has reviewed your case.',
-              transactionAmount: String(dispute.transaction_amount),
-              transactionDate: dispute.transaction_date,
+              transactionAmount: String(dispute.transactionAmount),
+              transactionDate: dispute.transactionDate,
               expectedDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString()
             }
           );
-          console.log(`📧 Status change notification sent to ${dispute.email}`);
+          console.log(`📧 Status change notification sent to ${dispute.customerEmail}`);
         }
       } catch (emailError) {
         console.error('Failed to send status change email:', emailError);
@@ -364,7 +373,7 @@ router.patch('/:id', authenticateToken, requirePermission('manage_disputes'), as
 
     res.json({
       success: true,
-      data: dispute,
+      data: dispute as any,
       message: 'Dispute updated successfully'
     });
   } catch (error) {
@@ -376,23 +385,36 @@ router.patch('/:id', authenticateToken, requirePermission('manage_disputes'), as
 // Get dispute statistics (ADMIN)
 router.get('/stats/dashboard', authenticateToken, requirePermission('view_analytics'), async (_req: AuthRequest, res) => {
   try {
-    const db = await getDb();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    const totalDisputes = db.data.disputes.length;
-    const pendingDisputes = db.data.disputes.filter((d: any) => d.status === 'pending').length;
-    const inReviewDisputes = db.data.disputes.filter((d: any) => d.status === 'in_review').length;
-    const resolvedDisputes = db.data.disputes.filter((d: any) => d.status === 'resolved').length;
-    const rejectedDisputes = db.data.disputes.filter((d: any) => d.status === 'rejected').length;
+    const [
+      totalDisputes,
+      pendingDisputes,
+      inReviewDisputes,
+      resolvedDisputes,
+      rejectedDisputes,
+      todayDisputes,
+      activeChats,
+      closedChats,
+      totalEmailThreads,
+      openEmailThreads,
+      closedEmailThreads
+    ] = await Promise.all([
+      prisma.dispute.count(),
+      prisma.dispute.count({ where: { status: 'pending' } }),
+      prisma.dispute.count({ where: { status: 'in_review' } }),
+      prisma.dispute.count({ where: { status: 'resolved' } }),
+      prisma.dispute.count({ where: { status: 'rejected' } }),
+      prisma.dispute.count({ where: { createdAt: { gte: today } } }),
+      prisma.chatSession.count({ where: { status: 'active' } }),
+      prisma.chatSession.count({ where: { status: 'closed' } }),
+      prisma.emailThread.count(),
+      prisma.emailThread.count({ where: { status: 'open' } }),
+      prisma.emailThread.count({ where: { status: 'closed' } })
+    ]);
+
     const closedDisputes = resolvedDisputes + rejectedDisputes;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const todayDisputes = db.data.disputes.filter((d: any) => d.created_at.startsWith(today)).length;
-    
-    const activeChats = db.data.chat_sessions.filter((s: any) => s.status === 'active').length;
-    const closedChats = db.data.chat_sessions.filter((s: any) => s.status === 'closed').length;
-    const totalEmailThreads = db.data.email_threads.length;
-    const openEmailThreads = db.data.email_threads.filter((t: any) => t.status === 'open').length;
-    const closedEmailThreads = db.data.email_threads.filter((t: any) => t.status === 'closed').length;
 
     res.json({
       success: true,

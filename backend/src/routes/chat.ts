@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import { getDb } from '../database/db';
+import prisma from '../database/prismaClient';
 import { authenticateToken, requirePermission, AuthRequest } from '../middleware/auth';
 import { ChatSession, ApiResponse, PaginatedResponse } from '../types';
 import emailService from '../services/emailService';
@@ -9,31 +9,29 @@ const router = Router();
 // Get all chat sessions
 router.get('/sessions', authenticateToken, requirePermission('view_chats'), async (req: AuthRequest, res: Response<PaginatedResponse<ChatSession>>) => {
   try {
-    const db = await getDb();
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
-    const offset = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     const { status, assignedTo } = req.query;
 
-    let sessions = [...db.data.chat_sessions];
+    const where: any = {};
+    if (status) where.status = status;
+    if (assignedTo) where.assignedTo = assignedTo;
 
-    if (status) {
-      sessions = sessions.filter((s: any) => s.status === status);
-    }
-
-    if (assignedTo) {
-      sessions = sessions.filter((s: any) => s.assigned_to === assignedTo);
-    }
-
-    sessions.sort((a: any, b: any) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime());
-
-    const total = sessions.length;
-    const paginatedSessions = sessions.slice(offset, offset + limit);
+    const [sessions, total] = await Promise.all([
+      prisma.chatSession.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { lastMessageAt: 'desc' }
+      }),
+      prisma.chatSession.count({ where })
+    ]);
 
     res.json({
       success: true,
-      data: paginatedSessions,
+      data: sessions as any[],
       pagination: {
         page,
         limit,
@@ -50,23 +48,23 @@ router.get('/sessions', authenticateToken, requirePermission('view_chats'), asyn
 // Get single chat session with messages
 router.get('/sessions/:id', authenticateToken, requirePermission('view_chats'), async (req: AuthRequest, res: Response<ApiResponse<any>>) => {
   try {
-    const db = await getDb();
-    const session = db.data.chat_sessions.find((s: any) => s.id === req.params.id);
+    const session = await prisma.chatSession.findUnique({
+      where: { id: req.params.id },
+      include: {
+        messages: {
+          orderBy: { timestamp: 'asc' }
+        }
+      }
+    });
 
     if (!session) {
       res.status(404).json({ success: false, error: 'Chat session not found' });
       return;
     }
 
-    const messages = db.data.chat_messages.filter((m: any) => m.session_id === req.params.id);
-    messages.sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-
     res.json({
       success: true,
-      data: {
-        ...session,
-        messages
-      }
+      data: session
     });
   } catch (error) {
     console.error('Get chat session error:', error);
@@ -77,32 +75,27 @@ router.get('/sessions/:id', authenticateToken, requirePermission('view_chats'), 
 // Update chat session (assign, close, etc.)
 router.patch('/sessions/:id', authenticateToken, requirePermission('respond_chats'), async (req: AuthRequest, res: Response<ApiResponse<ChatSession>>) => {
   try {
-    const db = await getDb();
     const { status, assignedTo } = req.body;
     
-    const session = db.data.chat_sessions.find((s: any) => s.id === req.params.id);
-
-    if (!session) {
-      res.status(404).json({ success: false, error: 'Session not found' });
-      return;
-    }
-
+    const updateData: any = {};
     if (status) {
-      session.status = status;
+      updateData.status = status;
       if (status === 'closed') {
-        session.ended_at = new Date().toISOString();
+        updateData.endedAt = new Date();
       }
     }
-
     if (assignedTo !== undefined) {
-      session.assigned_to = assignedTo;
+      updateData.assignedTo = assignedTo;
     }
 
-    await db.write();
+    const session = await prisma.chatSession.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
 
     res.json({
       success: true,
-      data: session,
+      data: session as any,
       message: 'Chat session updated successfully'
     });
   } catch (error) {
@@ -114,16 +107,19 @@ router.patch('/sessions/:id', authenticateToken, requirePermission('respond_chat
 // Get chat statistics
 router.get('/stats', authenticateToken, requirePermission('view_chats'), async (_req: AuthRequest, res) => {
   try {
-    const db = await getDb();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    const activeChats = db.data.chat_sessions.filter((s: any) => s.status === 'active').length;
-    const waitingChats = db.data.chat_sessions.filter((s: any) => s.status === 'waiting').length;
-    const closedToday = db.data.chat_sessions.filter((s: any) => {
-      if (s.status === 'closed' && s.ended_at) {
-        return s.ended_at.startsWith(new Date().toISOString().split('T')[0]);
-      }
-      return false;
-    }).length;
+    const [activeChats, waitingChats, closedToday] = await Promise.all([
+      prisma.chatSession.count({ where: { status: 'active' } }),
+      prisma.chatSession.count({ where: { status: 'waiting' } }),
+      prisma.chatSession.count({
+        where: {
+          status: 'closed',
+          endedAt: { gte: today }
+        }
+      })
+    ]);
 
     res.json({
       success: true,
@@ -139,33 +135,34 @@ router.get('/stats', authenticateToken, requirePermission('view_chats'), async (
   }
 });
 
-export default router;
-
 // Send chat transcript via email and optionally close session
 router.post('/sessions/:id/transcript', authenticateToken, requirePermission('respond_chats'), async (req: AuthRequest, res: Response<ApiResponse<any>>) => {
   try {
-    const db = await getDb();
     const { to, close } = req.body || {};
 
-    const session = db.data.chat_sessions.find((s: any) => s.id === req.params.id);
+    const session = await prisma.chatSession.findUnique({
+      where: { id: req.params.id },
+      include: {
+        messages: {
+          orderBy: { timestamp: 'asc' }
+        }
+      }
+    });
+
     if (!session) {
       res.status(404).json({ success: false, error: 'Session not found' });
       return;
     }
 
-    const messages = db.data.chat_messages
-      .filter((m: any) => m.session_id === req.params.id)
-      .sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-
-    const lines = messages.map((m: any) => {
-      const who = m.is_user ? (session.customer_name || 'Customer') : 'Agent';
+    const lines = session.messages.map((m: any) => {
+      const who = m.isUser ? (session.customerName || 'Customer') : 'Agent';
       const at = new Date(m.timestamp).toLocaleString();
-      return `[${at}] ${who}: ${m.text}`;
+      return `[${at}] ${who}: ${m.message}`;
     });
-    const body = `Hello ${session.customer_name || ''},\n\nHere is the transcript of your recent chat with our support team (Session ${session.id}).\n\n${lines.join('\n')}\n\nBest regards,\nDispute Support`;
+    const body = `Hello ${session.customerName || ''},\n\nHere is the transcript of your recent chat with our support team (Session ${session.id}).\n\n${lines.join('\n')}\n\nBest regards,\nDispute Support`;
     const subject = `Chat Transcript - Session ${session.id}`;
 
-    const recipient = to || session.customer_email;
+    const recipient = to || session.customerEmail;
     if (!recipient) {
       res.status(400).json({ success: false, error: 'Recipient email not available' });
       return;
@@ -174,9 +171,13 @@ router.post('/sessions/:id/transcript', authenticateToken, requirePermission('re
     const sent = await emailService.sendEmail(recipient, subject, body);
 
     if (close) {
-      session.status = 'closed';
-      session.ended_at = new Date().toISOString();
-      await db.write();
+      await prisma.chatSession.update({
+        where: { id: req.params.id },
+        data: {
+          status: 'closed',
+          endedAt: new Date()
+        }
+      });
     }
 
     res.json({ success: true, data: { sent, to: recipient }, message: 'Transcript sent successfully' });
@@ -185,3 +186,5 @@ router.post('/sessions/:id/transcript', authenticateToken, requirePermission('re
     res.status(500).json({ success: false, error: 'Failed to send transcript' });
   }
 });
+
+export default router;
