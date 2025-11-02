@@ -41,6 +41,12 @@ body {
     overflow-x: hidden;
 }
 
+/* Main content wrapper with side margins */
+main {
+    margin-left: 250px;
+    margin-right: 250px;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -476,82 +482,6 @@ body {
 }
 
 /* ==========================================
-   Dispute Types Section
-   ========================================== */
-
-.dispute-types-section {
-    display: none;
-    padding: 0;
-    background: var(--white);
-}
-
-.dispute-types-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-}
-
-.dispute-type-card {
-    padding: 35px 25px;
-    text-align: center;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid var(--hsbc-border);
-}
-
-.dispute-type-card.corporate {
-    background: #f8f9fa;
-    border-right: 1px solid var(--hsbc-border);
-}
-
-.dispute-type-card.individual {
-    background: #ffffff;
-}
-
-.dispute-type-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-.dispute-type-icon {
-    width: 50px;
-    height: 50px;
-    margin: 0 auto 15px;
-    color: var(--hsbc-red);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dispute-type-card h3 {
-    font-size: 18px;
-    font-weight: 400;
-    color: var(--hsbc-black);
-    margin-bottom: 12px;
-}
-
-.dispute-type-card p {
-    font-size: var(--font-size-small);
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 15px;
-}
-
-.dispute-type-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--hsbc-red);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: var(--font-size-base);
-    transition: all 0.3s ease;
-}
-
-.dispute-type-link:hover {
-    gap: 12px;
-}
-
-/* ==========================================
    Section Headers (Reusable)
    ========================================== */
 
@@ -926,23 +856,38 @@ body {
 }
 
 .footer-main {
-    padding: 35px 0;
+    padding: 15px 0;
 }
 
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
 }
 
 .footer-column {
-    padding: 15px;
+    padding: 15px 30px;
+    position: relative;
+}
+
+.footer-column::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20px;
+    bottom: 20px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.footer-column:last-child::after {
+    display: none;
 }
 
 .footer-title {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     margin-bottom: 12px;
 }
 
@@ -950,6 +895,7 @@ body {
     color: var(--hsbc-red);
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
 }
 
 .footer-title h3 {
@@ -1161,14 +1107,6 @@ body {
         font-size: 15px;
     }
     
-    .dispute-types-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .dispute-type-card.corporate {
-        border-right: none;
-    }
-    
     .outstanding-split {
         grid-template-columns: 1fr;
         gap: 30px;
@@ -1285,7 +1223,7 @@ body {
 .floating-chat-widget {
     position: fixed;
     bottom: 30px;
-    right: 30px;
+    right: 30px; /* Fixed position, not affected by margins */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -1471,5 +1409,16 @@ body {
     .floating-chat-widget {
         bottom: 20px;
         right: 20px;
+    }
+    
+    /* Remove side margins on mobile */
+    main {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    /* Hide footer-main section on mobile */
+    .footer-main {
+        display: none;
     }
 }
