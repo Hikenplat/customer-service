@@ -41,10 +41,10 @@
                     </nav>
                     <div class="header-top-meta">
                         <div class="header-user-wrapper">
-                            <a class="register-button" href="#register" role="button">
+                            <a class="register-button" href="/register" role="button">
                                 Register
                             </a>
-                            <a class="login-button" href="/admin" role="button">
+                            <a class="login-button" href="/login" role="button">
                                 Log on
                             </a>
                         </div>
@@ -65,14 +65,16 @@
 
                     <div class="header-logo">
                         <h1>
-                            <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
-                            <span><strong>HSBC</strong> UK</span>
+                            <a href="/" class="header-logo-link">
+                                <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
+                                <span><strong>HSBC</strong> UK</span>
+                            </a>
                         </h1>
                     </div>
 
                     <!-- Mobile Login Button (Right) -->
                     <div class="mobile-header-actions">
-                        <a class="mobile-login-button" href="/admin" role="button">
+                        <a class="mobile-login-button" href="/login" role="button">
                             Log on
                         </a>
                     </div>
@@ -322,9 +324,6 @@
                         <p>From daily banking to life's big moments, we're supporting our customers every step of the way.</p>
                     </div>
                 </div>
-                <div class="trustpilot-right">
-                    <!-- Empty for future content -->
-                </div>
             </div>
         </div>
     </section>
@@ -333,18 +332,15 @@
     <section class="outstanding-section">
         <div class="container">
             <div class="section-header">
-                <h2>Why HSBC Leads in Dispute Resolution</h2>
+                <h2>Why HSBC Leads</h2>
                 <p>Our commitment to customer satisfaction drives everything we do</p>
             </div>
             
-            <div class="outstanding-split">
-                <div class="outstanding-image-half">
+            <div class="outstanding-grid">
+                <div class="outstanding-grid-item outstanding-grid-item--image">
                     <img src="/scripts/public/overall-service-quality-gb-1064x894.jpg" alt="Overall Service Quality" class="service-quality-image">
                 </div>
-                <div class="outstanding-charts-half">
-                    <div class="outstanding-content">
-                <!-- Resolution Rate Chart -->
-                <div class="outstanding-chart">
+                <div class="outstanding-grid-item outstanding-chart">
                     <h3>Resolution Success Rate</h3>
                     <svg viewBox="0 0 350 280" xmlns="http://www.w3.org/2000/svg">
                         <!-- Grid lines -->
@@ -388,9 +384,29 @@
                         </defs>
                     </svg>
                 </div>
-
-                <!-- Recommendation Rate Chart -->
-                <div class="outstanding-chart">
+                <div class="outstanding-grid-item outstanding-chart outstanding-chart--donut" aria-labelledby="trustpilot-donut-heading" aria-describedby="trustpilot-donut-caption">
+                    <h3 id="trustpilot-donut-heading">Trustpilot Reviews</h3>
+                    <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Trustpilot score 4.4 out of 5 based on 17,872 reviews">
+                        <circle cx="160" cy="120" r="90" fill="none" stroke="#e2e8f0" stroke-width="32" />
+                        <circle cx="160" cy="120" r="90" fill="none" stroke="#333333" stroke-width="32"
+                                stroke-dasharray="566" stroke-dashoffset="68"
+                                transform="rotate(-90 160 120)" stroke-linecap="round" />
+                        <text x="160" y="118" text-anchor="middle" font-size="44" font-weight="bold" fill="#333333">4.4</text>
+                        <text x="160" y="146" text-anchor="middle" font-size="16" fill="#475569">out of 5</text>
+                        <text x="160" y="176" text-anchor="middle" font-size="14" fill="#64748b">17,872 verified
+                            <tspan x="160" dy="18">reviews</tspan>
+                        </text>
+                    </svg>
+                    <div class="trustpilot-stars" aria-hidden="true">
+                        <span class="star full">★</span>
+                        <span class="star full">★</span>
+                        <span class="star full">★</span>
+                        <span class="star full">★</span>
+                        <span class="star half">★</span>
+                    </div>
+                    <p class="donut-caption" id="trustpilot-donut-caption">Updated this quarter • Trustpilot UK</p>
+                </div>
+                <div class="outstanding-grid-item outstanding-chart outstanding-chart--donut">
                     <h3>Customer Recommendation Rate</h3>
                     <div class="star-service-label">
                         <svg width="120" height="20" viewBox="0 0 120 20" xmlns="http://www.w3.org/2000/svg">
@@ -423,8 +439,6 @@
                         <circle cx="220" cy="240" r="6" fill="#f1f5f9"/>
                         <text x="232" y="245" font-size="13" fill="#666">Neutral (1/10)</text>
                     </svg>
-                </div>
-            </div>
                 </div>
             </div>
 

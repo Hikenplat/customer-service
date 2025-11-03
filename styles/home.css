@@ -29,7 +29,7 @@
     --border-radius: 14px;
     --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.12);
     --transition: all 0.2s ease;
-    
+
     /* HSBC Typography */
     --font-family: 'UniversforHSBC', Arial, Helvetica, sans-serif;
     --font-size-small: 14px;
@@ -46,13 +46,17 @@ body {
     line-height: 1.5;
     color: var(--text-primary);
     background: var(--white);
+    margin: 0;
     overflow-x: hidden;
+    padding-top: 180px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Main content wrapper with side margins */
 main {
-    margin-left: 250px;
-    margin-right: 250px;
+    flex: 1;
 }
 
 .container {
@@ -197,6 +201,19 @@ main {
     color: var(--hsbc-black);
 }
 
+.header-logo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.header-logo-link:focus-visible {
+    outline: 2px solid var(--hsbc-red);
+    outline-offset: 4px;
+}
+
 .header-logo h1 strong {
     font-weight: 700;
 }
@@ -335,6 +352,7 @@ main {
 
 .trustpilot-content {
     display: flex;
+    flex-wrap: wrap;
     gap: 40px;
     max-width: 1200px;
     margin: 0 auto;
@@ -342,7 +360,7 @@ main {
 }
 
 .trustpilot-left {
-    flex: 0 0 50%;
+    flex: 1 1 100%;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -350,9 +368,12 @@ main {
 
 .trustpilot-image {
     width: 100%;
+    max-width: 560px;
+    max-height: 460px;
     height: auto;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    align-self: flex-start;
 }
 
 .trustpilot-text {
@@ -366,9 +387,70 @@ main {
     margin: 0;
 }
 
-.trustpilot-right {
-    flex: 0 0 50%;
-    /* Empty for future content */
+.trustpilot-stars {
+    display: flex;
+    gap: 0.35rem;
+    font-size: 1.15rem;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.trustpilot-stars .star {
+    color: #fbbf24;
+    text-shadow: 0 0 12px rgba(251, 191, 36, 0.45);
+}
+
+.trustpilot-stars .half {
+    background: linear-gradient(90deg, #fbbf24 50%, rgba(255,255,255,0.15) 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.donut-caption {
+    font-size: 0.82rem;
+    color: #64748b;
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 0.04em;
+}
+
+@media (max-width: 1024px) {
+    .trustpilot-content {
+        flex-direction: column;
+    }
+
+    .trustpilot-image {
+        max-width: 100%;
+        align-self: center;
+    }
+
+    .outstanding-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+        justify-items: stretch;
+    }
+
+    .outstanding-chart {
+        max-width: 100%;
+        gap: 24px;
+    }
+
+    .outstanding-chart {
+        max-width: 100%;
+        min-height: 340px;
+        padding: 28px 22px;
+    }
+
+    .outstanding-chart--donut {
+        min-height: 340px;
+        padding: 32px 26px;
+    }
+
+    .outstanding-chart--donut svg {
+        max-width: 360px;
+    }
 }
 
 /* ==========================================
@@ -519,46 +601,68 @@ main {
     background: var(--white);
 }
 
-.outstanding-split {
+
+
+.outstanding-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 40px;
-    align-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    margin-bottom: 32px;
+    align-items: stretch;
+    justify-items: stretch;
+    grid-auto-rows: minmax(0, 1fr);
 }
 
-.outstanding-image-half {
+.outstanding-grid > * {
     width: 100%;
+}
+
+.outstanding-grid-item {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.outstanding-grid-item--image {
+    padding: 0;
+    overflow: hidden;
+}
+
+.outstanding-grid-item--image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
 }
 
 .service-quality-image {
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.outstanding-charts-half {
-    width: 100%;
-}
-
-.outstanding-content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
+    flex: 1 1 auto;
 }
 
 .outstanding-chart {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 35px 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 30px 26px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 420px;
+    min-height: 380px;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+}
+
+.outstanding-chart--donut {
+    min-height: 400px;
+    padding: 38px 32px;
+}
+
+.outstanding-chart--donut svg {
+    max-width: 460px;
 }
 
 .outstanding-chart h3 {
@@ -587,7 +691,7 @@ main {
 
 .outstanding-chart svg {
     width: 100%;
-    max-width: 350px;
+    max-width: 460px;
     height: auto;
     display: block;
     flex-shrink: 0;
@@ -958,6 +1062,10 @@ main {
    ========================================== */
 
 @media (max-width: 968px) {
+    body {
+        padding-top: 140px;
+    }
+
     /* Hide top navigation bar on mobile */
     .header-top-container {
         display: none;
@@ -1115,19 +1223,24 @@ main {
         font-size: 15px;
     }
     
-    .outstanding-split {
+    .outstanding-grid {
         grid-template-columns: 1fr;
-        gap: 30px;
-    }
-    
-    .outstanding-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
+        gap: 24px;
     }
 
     .outstanding-chart {
-        min-height: 0;
-        padding: 30px 20px;
+        max-width: 100%;
+        min-height: 320px;
+        padding: 26px 20px;
+    }
+
+    .outstanding-chart--donut {
+        min-height: 320px;
+        padding: 30px 24px;
+    }
+
+    .outstanding-chart--donut svg {
+        max-width: 320px;
     }
 
     .outstanding-chart svg {

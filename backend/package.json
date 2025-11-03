@@ -4,8 +4,8 @@
   "description": "TypeScript backend for Payment Dispute Portal with Admin Control Hub",
   "main": "dist/server.js",
   "scripts": {
-  "build": "npm run prisma:generate && tsc",
-  "prestart": "npm run build",
+    "build": "npm run prisma:generate && tsc",
+    "prestart": "npm run build",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "node dist/server.js",
     "watch": "tsc --watch",
@@ -36,6 +36,7 @@
     "@types/nodemailer": "^6.4.14",
     "@types/uuid": "^9.0.7",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.41.3",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "date-fns": "^3.0.6",

@@ -26,6 +26,65 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { (t as HTMLElement).style.display = 'none'; }, 4000);
   };
 
+  const formatBytes = (bytes?: number | null) => {
+    if (!bytes || bytes <= 0) return '';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let value = bytes;
+    let unitIndex = 0;
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
+      unitIndex += 1;
+    }
+    const formatted = unitIndex === 0 ? value.toFixed(0) : value.toFixed(1);
+    return `${formatted} ${units[unitIndex]}`;
+  };
+
+  const getAttachmentIcon = (mimeType?: string) => {
+    if (!mimeType) return '📎';
+    if (mimeType.includes('pdf')) return '📄';
+    if (mimeType.includes('word') || mimeType.includes('msword')) return '📝';
+    if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📊';
+    if (mimeType.startsWith('text/')) return '📑';
+    return '📁';
+  };
+
+  type NormalizedAttachment = { name: string; url: string; mimeType: string; size?: number };
+
+  const normalizeAttachments = (dispute: any): NormalizedAttachment[] => {
+    const pools = [dispute?.attachments, dispute?.file_uploads, dispute?.fileUploads];
+    const sources = pools.filter(Array.isArray).flat();
+    const seen = new Set<string>();
+    const normalized: NormalizedAttachment[] = [];
+
+    sources.forEach((file: any) => {
+      if (!file) return;
+
+      let attachment: NormalizedAttachment | null = null;
+
+      if (typeof file === 'string') {
+        const url = file;
+        const name = url.split('/').pop() || 'Document';
+        attachment = { name, url, mimeType: '', size: undefined };
+      } else {
+        const url = file.url || file.secureUrl || file.filePath || file.path;
+        if (!url) return;
+        attachment = {
+          name: file.name || file.originalName || file.fileName || 'Document',
+          url,
+          mimeType: file.mimeType || file.mimetype || '',
+          size: typeof file.size === 'number' ? file.size : undefined
+        };
+      }
+
+      if (attachment && !seen.has(attachment.url)) {
+        normalized.push(attachment);
+        seen.add(attachment.url);
+      }
+    });
+
+    return normalized;
+  };
+
   // Browser notifications helper
   const requestNotificationPermission = async () => {
     if ('Notification' in window && Notification.permission === 'default') {
@@ -349,11 +408,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Attachments
       const attachmentsDiv = byId('detailAttachments')!;
-      if (dispute.attachments && dispute.attachments.length > 0) {
-        attachmentsDiv.innerHTML = dispute.attachments.map((file: string) => 
-          `<p>📎 ${file}</p>`
-        ).join('');
+      const attachments = normalizeAttachments(dispute);
+
+      if (attachments.length > 0) {
+        attachmentsDiv.classList.add('attachment-grid');
+        attachmentsDiv.innerHTML = attachments.map((file) => {
+          const isImage = file.mimeType?.startsWith('image/');
+          const preview = isImage
+            ? `<img class="attachment-thumb" src="${file.url}" alt="${file.name} preview" loading="lazy" />`
+            : `<span class="attachment-icon" aria-hidden="true">${getAttachmentIcon(file.mimeType)}</span>`;
+          const sizeLabel = formatBytes(file.size);
+          const sizeMarkup = sizeLabel ? `<span class="attachment-size">${sizeLabel}</span>` : '';
+          return `
+            <a class="attachment-card" href="${file.url}" target="_blank" rel="noopener noreferrer">
+              ${preview}
+              <span class="attachment-meta">
+                <span class="attachment-name">${file.name}</span>
+                ${sizeMarkup}
+              </span>
+            </a>
+          `;
+        }).join('');
       } else {
+        attachmentsDiv.classList.remove('attachment-grid');
         attachmentsDiv.innerHTML = '<p>No attachments</p>';
       }
 

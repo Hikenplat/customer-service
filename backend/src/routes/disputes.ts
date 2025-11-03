@@ -3,9 +3,31 @@ import prisma from '../database/prismaClient';
 import { authenticateToken, requirePermission, AuthRequest } from '../middleware/auth';
 import { upload } from '../middleware/upload';
 import { DisputeRecord, ApiResponse, PaginatedResponse, DisputeFilters } from '../types';
+import { isCloudinaryConfigured, uploadToCloudinary, UploadedAsset } from '../services/cloudinaryService';
 import emailService from '../services/emailService';
 
 const router = Router();
+const cloudinaryEnabled = isCloudinaryConfigured();
+
+const buildDisputeResponse = (dispute: any) => {
+  const attachments = Array.isArray(dispute?.fileUploads)
+    ? dispute.fileUploads
+        .filter((file: any) => file && file.filePath)
+        .map((file: any) => ({
+          id: file.id,
+          name: file.originalName || file.fileName || file.filename || 'Document',
+          url: file.filePath,
+          mimeType: file.mimeType,
+          size: file.size,
+          uploadedAt: file.uploadedAt
+        }))
+    : [];
+
+  return {
+    ...dispute,
+    attachments
+  };
+};
 
 // Track dispute by reference number (PUBLIC - no auth required)
 router.post('/track', async (req, res: Response<ApiResponse<any>>) => {
@@ -78,7 +100,20 @@ router.post('/', upload.array('documents', 10), async (req, res: Response<ApiRes
     }
 
     const referenceNumber = `DSP-${Date.now()}`;
-    const files = req.files as any[];
+    const files = (req.files as Express.Multer.File[]) || [];
+    let uploadedAssets: UploadedAsset[] = [];
+
+    if (cloudinaryEnabled && files.length > 0) {
+      try {
+        uploadedAssets = await Promise.all(
+          files.map((file) => uploadToCloudinary(file))
+        );
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        res.status(500).json({ success: false, error: 'Failed to upload supporting documents' });
+        return;
+      }
+    }
     
     // Create dispute with nested file uploads and email thread
     const dispute = await prisma.dispute.create({
@@ -96,15 +131,18 @@ router.post('/', upload.array('documents', 10), async (req, res: Response<ApiRes
         authorizationStatus: authorizationStatus || null,
         status: 'pending',
         priority: 'medium',
-        fileUploads: files && files.length > 0 ? {
-          create: files.map((file: any) => ({
-            fileName: file.filename,
-            originalName: file.originalname,
-            filePath: file.path,
-            mimeType: file.mimetype,
-            size: file.size,
-            uploadedBy: email
-          }))
+        fileUploads: files.length > 0 ? {
+          create: files.map((file: Express.Multer.File, index) => {
+            const asset = uploadedAssets[index];
+            return {
+              fileName: asset?.publicId || file.filename || file.originalname,
+              originalName: file.originalname,
+              filePath: asset?.secureUrl || file.path || '',
+              mimeType: file.mimetype,
+              size: file.size,
+              uploadedBy: email
+            };
+          })
         } : undefined,
         emailThreads: {
           create: {
@@ -166,12 +204,14 @@ router.post('/', upload.array('documents', 10), async (req, res: Response<ApiRes
       );
     }
 
+    const responsePayload = buildDisputeResponse(dispute);
+
     res.status(201).json({
       success: true,
-      data: { 
-        ...dispute, 
-        threadId: dispute.emailThreads[0]?.id, 
-        linkedChatSessionId 
+      data: {
+        ...responsePayload,
+        threadId: dispute.emailThreads[0]?.id,
+        linkedChatSessionId
       } as any,
       message: 'Dispute submitted successfully'
     });
@@ -270,7 +310,7 @@ router.get('/:id', authenticateToken, requirePermission('view_disputes'), async 
 
     res.json({
       success: true,
-      data: dispute as any
+      data: buildDisputeResponse(dispute) as any
     });
   } catch (error) {
     console.error('Get dispute error:', error);

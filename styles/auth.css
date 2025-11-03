@@ -1,0 +1,320 @@
+:root {
+  --auth-bg: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.85) 100%);
+  --auth-card-bg: rgba(255, 255, 255, 0.94);
+  --auth-input-bg: rgba(255, 255, 255, 0.85);
+  --auth-border-color: rgba(148, 163, 184, 0.35);
+  --auth-shadow: 0 30px 60px rgba(15, 23, 42, 0.28);
+  --auth-radius: 18px;
+}
+
+body.auth-page {
+  min-height: 100vh;
+  margin: 0;
+  font-family: var(--font-family, 'UniversforHSBC', Arial, Helvetica, sans-serif);
+  color: var(--hsbc-black, #111827);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.9) 0%, rgba(241, 245, 249, 0.9) 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-main {
+  flex: 1;
+  padding: 90px 0 120px;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-shell {
+  width: 100%;
+  max-width: 1040px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--auth-radius);
+  padding: 24px;
+  box-shadow: var(--auth-shadow);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.auth-shell-single {
+  max-width: 520px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.auth-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: var(--auth-card-bg);
+  border-radius: calc(var(--auth-radius) - 6px);
+  overflow: hidden;
+  box-shadow: var(--auth-shadow);
+}
+
+.auth-card-single {
+  display: block;
+  background: var(--white, #ffffff);
+  border-radius: var(--auth-radius);
+  box-shadow: var(--auth-shadow);
+}
+
+.auth-card-single .auth-form-wrap {
+  padding: 44px 40px;
+}
+
+.auth-hero {
+  position: relative;
+  padding: 48px 40px;
+  background: linear-gradient(200deg, rgba(184, 16, 46, 0.14) 0%, rgba(15, 23, 42, 0.05) 60%);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  justify-content: center;
+}
+
+.auth-hero h1 {
+  font-size: 2.2rem;
+  color: var(--hsbc-black, #111827);
+  margin: 0;
+}
+
+.auth-hero p {
+  font-size: 1rem;
+  color: rgba(15, 23, 42, 0.68);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.auth-hero .auth-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-benefit {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.auth-benefit svg {
+  flex-shrink: 0;
+  color: var(--primary-red, #B8102E);
+}
+
+.auth-benefit span {
+  font-size: 0.95rem;
+  color: rgba(15, 23, 42, 0.68);
+}
+
+.auth-form-wrap {
+  padding: 48px 44px;
+  background: var(--white, #ffffff);
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.auth-logo img {
+  width: 40px;
+  height: 40px;
+}
+
+.auth-logo span {
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+}
+
+.auth-title {
+  margin: 0 0 10px;
+  font-size: 1.75rem;
+  color: var(--hsbc-black, #111827);
+}
+
+.auth-subtitle {
+  margin: 0 0 28px;
+  font-size: 0.98rem;
+  color: rgba(15, 23, 42, 0.58);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(15, 23, 42, 0.66);
+  text-transform: uppercase;
+}
+
+.auth-field input {
+  background: var(--auth-input-bg);
+  border: 1px solid var(--auth-border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-field input:focus {
+  outline: none;
+  border-color: rgba(184, 16, 46, 0.6);
+  box-shadow: 0 0 0 5px rgba(184, 16, 46, 0.12);
+}
+
+.auth-action {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.auth-action button {
+  background: var(--primary-red, #B8102E);
+  color: var(--white, #ffffff);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.auth-action button:hover {
+  background: var(--hsbc-dark-red, #9E0E29);
+  transform: translateY(-1px);
+}
+
+.auth-action button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: rgba(15, 23, 42, 0.58);
+}
+
+.auth-links a {
+  color: var(--primary-red, #B8102E);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-message {
+  display: none;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.auth-message[data-tone="error"] {
+  display: block;
+  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.auth-message[data-tone="success"] {
+  display: block;
+  background: rgba(34, 197, 94, 0.12);
+  color: #166534;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.auth-footer {
+  margin-top: 32px;
+  font-size: 0.95rem;
+  color: rgba(15, 23, 42, 0.55);
+}
+
+.auth-footer a {
+  color: var(--primary-red, #B8102E);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .auth-main {
+    padding: 100px 24px 110px;
+  }
+
+  .auth-card {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card-single .auth-form-wrap {
+    padding: 40px 32px;
+  }
+
+  .auth-hero {
+    padding: 36px 28px;
+  }
+
+  .auth-form-wrap {
+    padding: 36px 28px;
+  }
+
+  .auth-links {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-main {
+    padding: 80px 20px 90px;
+  }
+
+  .auth-shell {
+    padding: 16px;
+  }
+
+  .auth-shell-single {
+    padding: 0;
+  }
+
+  .auth-form-wrap {
+    padding: 32px 24px;
+  }
+
+  .auth-card-single .auth-form-wrap {
+    padding: 32px 24px;
+  }
+}

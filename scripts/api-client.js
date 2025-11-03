@@ -56,6 +56,22 @@ class DisputeAPI {
     return data;
   }
 
+  async register(payload) {
+    const data = await this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      skipAuth: true
+    });
+
+    if (data.success && data.data?.token) {
+      this.token = data.data.token;
+      localStorage.setItem('auth_token', this.token);
+      localStorage.setItem('user', JSON.stringify(data.data.user));
+    }
+
+    return data;
+  }
+
   async logout() {
     this.token = null;
     localStorage.removeItem('auth_token');

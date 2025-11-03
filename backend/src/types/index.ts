@@ -109,6 +109,16 @@ export interface AdminUser {
   createdAt?: Date | string;
 }
 
+export interface PortalUser {
+  id?: string;
+  email: string;
+  password?: string;
+  fullName: string;
+  phone?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
 export type AdminPermission = 
   | 'view_disputes' 
   | 'manage_disputes' 

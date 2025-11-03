@@ -63,6 +63,8 @@ build/
 scripts/*.js
 scripts/*.d.ts
 !scripts/api-client.js
+!scripts/login.js
+!scripts/register.js
 
 # ============ IDE & EDITOR ============
 # VS Code

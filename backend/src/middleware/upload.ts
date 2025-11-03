@@ -2,26 +2,28 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { isCloudinaryConfigured } from '../services/cloudinaryService';
 
 const uploadDir = process.env.UPLOAD_DIR || './uploads';
+const useCloudinary = isCloudinaryConfigured();
 
-// Ensure upload directory exists
-if (!fs.existsSync(uploadDir)) {
+if (!useCloudinary && !fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueId = uuidv4();
-    const ext = path.extname(file.originalname);
-    const filename = `${uniqueId}${ext}`;
-    cb(null, filename);
-  }
-});
+const storage = useCloudinary
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: (_req, _file, cb) => {
+        cb(null, uploadDir);
+      },
+      filename: (_req, file, cb) => {
+        const uniqueId = uuidv4();
+        const ext = path.extname(file.originalname);
+        const filename = `${uniqueId}${ext}`;
+        cb(null, filename);
+      }
+    });
 
 // File filter
 const fileFilter = (_req: any, file: any, cb: multer.FileFilterCallback) => {

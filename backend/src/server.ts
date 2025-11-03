@@ -111,6 +111,14 @@ app.get('/submit', (_req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
+app.get('/login', (_req, res) => {
+  res.sendFile(path.join(frontendPath, 'login.html'));
+});
+
+app.get('/register', (_req, res) => {
+  res.sendFile(path.join(frontendPath, 'register.html'));
+});
+
 app.get('/admin', (_req, res) => {
   res.sendFile(path.join(frontendPath, 'admin.html'));
 });
@@ -167,6 +175,8 @@ initializePrismaDatabase().then(() => {
     console.log('╠═══════════════════════════════════════════════════════════╣');
     console.log('║  PAGES:                                                   ║');
     console.log(`║  • Home:         http://localhost:${PORT}/                   ║`);
+  console.log(`║  • Login:        http://localhost:${PORT}/login               ║`);
+  console.log(`║  • Register:     http://localhost:${PORT}/register            ║`);
     console.log(`║  • Admin Panel:  http://localhost:${PORT}/admin              ║`);
     console.log(`║  • Track:        http://localhost:${PORT}/track              ║`);
     console.log('╠═══════════════════════════════════════════════════════════╣');

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in • HSBC Dispute Portal</title>
+  <link rel="icon" type="image/png" href="/content/dam/hsbc/gb/images/logos/favicon-32x32.png" sizes="32x32">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/auth.css">
+</head>
+<body class="auth-page login-page">
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="header-top-container">
+      <div class="header-top">
+        <div class="container">
+          <nav aria-label="product line">
+            <ul class="header-top-navigation">
+              <li class="header-top-navigation-item">
+                <a href="/personal">
+                  Personal
+                </a>
+              </li>
+              <li class="header-top-navigation-item">
+                <a href="/private">
+                  Private
+                </a>
+              </li>
+              <li class="header-top-navigation-item">
+                <a href="/business">
+                  Business
+                </a>
+              </li>
+              <li class="header-top-navigation-item">
+                <a href="/corporate">
+                  Corporate
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <div class="header-top-meta">
+            <div class="header-user-wrapper">
+              <a class="register-button" href="/register" role="button">
+                Register
+              </a>
+              <a class="login-button" href="/login" role="button" aria-current="page">
+                Log on
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-main-container">
+      <div class="header-main">
+        <div class="container">
+          <!-- Mobile Menu Toggle (Left) -->
+          <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          <div class="header-logo">
+            <h1>
+              <a href="/" class="header-logo-link">
+                <img src="/scripts/public/hsbc_logo.png" alt="HSBC Logo" width="60" height="60">
+                <span><strong>HSBC</strong> UK</span>
+              </a>
+            </h1>
+          </div>
+
+          <!-- Mobile Login Button (Right) -->
+          <div class="mobile-header-actions">
+            <a class="mobile-login-button" href="/login" role="button" aria-current="page">
+              Log on
+            </a>
+          </div>
+
+          <nav class="header-main-navigation" aria-label="main navigation">
+            <ul>
+              <li class="header-main-navigation-item">
+                <a href="/">
+                  <span class="header-main-navigation-title">Home</span>
+                  <span class="header-main-navigation-subtitle">Welcome</span>
+                </a>
+              </li>
+              <li class="header-main-navigation-item">
+                <a href="/submit">
+                  <span class="header-main-navigation-title">Submit Dispute</span>
+                  <span class="header-main-navigation-subtitle">New claim</span>
+                </a>
+              </li>
+              <li class="header-main-navigation-item">
+                <a href="/track">
+                  <span class="header-main-navigation-title">Track</span>
+                  <span class="header-main-navigation-subtitle">Check status</span>
+                </a>
+              </li>
+              <li class="header-main-navigation-item">
+                <a href="/admin">
+                  <span class="header-main-navigation-title">Admin</span>
+                  <span class="header-main-navigation-subtitle">Dashboard</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-main">
+    <div class="container auth-container">
+      <div class="auth-shell auth-shell-single">
+        <div class="auth-card auth-card-single">
+          <section class="auth-form-wrap">
+            <h2 class="auth-title">Log on</h2>
+            <p class="auth-subtitle">Enter your email and password to continue.</p>
+
+            <form id="loginForm" class="auth-form" novalidate>
+              <div class="auth-field">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" autocomplete="email" required placeholder="Enter your email">
+              </div>
+              <div class="auth-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+              </div>
+
+              <div id="loginMessage" class="auth-message" role="alert"></div>
+
+              <div class="auth-action">
+                <button type="submit">Log on securely</button>
+              </div>
+
+              <div class="auth-links">
+                <span>Need an account? <a href="/register">Register now</a></span>
+                <span><a href="/">Return to homepage</a></span>
+              </div>
+            </form>
+
+            <div class="auth-footer">
+              Having trouble logging in? <a href="mailto:support@disputeportal.com">Contact support</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-column">
+            <div class="footer-title">
+              <h3>Help &amp; Support</h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+            <p>Got a question? We're here to help you</p>
+          </div>
+
+          <div class="footer-column">
+            <div class="footer-title">
+              <h3>Branch Finder</h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+            <p>Find your nearest branch</p>
+          </div>
+
+          <div class="footer-column">
+            <div class="footer-title">
+              <h3>Our Service Performance</h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+            <p>View our service status to see how we're doing</p>
+          </div>
+
+          <div class="footer-column">
+            <div class="footer-title">
+              <h3>About HSBC</h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+            <p>Careers, Media, Investors and corporate information</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <nav aria-label="Footer navigation">
+          <ul class="footer-links">
+            <li><a href="#legal">Legal</a></li>
+            <li><a href="#privacy">Privacy Notice</a></li>
+            <li><a href="#cookies">Cookie Notice</a></li>
+            <li><a href="#accessibility">Accessibility</a></li>
+            <li><a href="#security">Security</a></li>
+          </ul>
+        </nav>
+        <div class="footer-legal">
+          <p>&copy; Copyright HSBC UK 2025. All rights reserved</p>
+          <p>HSBC UK Bank plc. Registered in England and Wales.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Chat Button -->
+  <div class="floating-chat-widget">
+    <div class="chat-prompt">Hi, Need Help?<br><span class="chat-subtext">We're here if you need us</span></div>
+    <button class="floating-chat-btn" aria-label="Open live chat" title="Chat with us">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <span class="chat-text">Chat</span>
+    </button>
+  </div>
+
+  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script src="scripts/chatSession.js"></script>
+  <script src="scripts/chatPanel.js"></script>
+  <script src="scripts/headerAuth.js"></script>
+  <script src="scripts/home.js"></script>
+  <script src="scripts/api-client.js"></script>
+  <script type="module" src="scripts/login.js"></script>
+</body>
+</html>
