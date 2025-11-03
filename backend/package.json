@@ -4,7 +4,8 @@
   "description": "TypeScript backend for Payment Dispute Portal with Admin Control Hub",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+  "build": "npm run prisma:generate && tsc",
+  "prestart": "npm run build",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "node dist/server.js",
     "watch": "tsc --watch",
