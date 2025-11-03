@@ -322,10 +322,26 @@ main {
         background: var(--hsbc-black);
         border-radius: 2px;
         transition: all 0.3s ease;
+        transform-origin: center;
     }
 
     .mobile-menu-toggle:hover span {
         background: var(--white);
+    }
+
+    .mobile-menu-toggle.is-open span:nth-child(1),
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .mobile-menu-toggle.is-open span:nth-child(2),
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-menu-toggle.is-open span:nth-child(3),
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
     }
 
     .mobile-menu-toggle::after {

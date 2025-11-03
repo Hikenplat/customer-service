@@ -48,21 +48,24 @@ body {
     background: var(--white);
     margin: 0;
     overflow-x: hidden;
-    padding-top: 180px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
 }
 
 /* Main content wrapper with side margins */
 main {
-    flex: 1;
+    margin: 0;
+    padding: 120px 250px 0;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+}
+
+@media (max-width: 1440px) {
+    main {
+        padding: 115px 180px 0;
+    }
 }
 
 /* ==========================================
@@ -417,6 +420,10 @@ main {
 }
 
 @media (max-width: 1024px) {
+    main {
+        padding: 120px 90px 0;
+    }
+
     .trustpilot-content {
         flex-direction: column;
     }
@@ -435,21 +442,17 @@ main {
     .outstanding-chart {
         max-width: 100%;
         gap: 24px;
-    }
-
-    .outstanding-chart {
-        max-width: 100%;
-        min-height: 340px;
-        padding: 28px 22px;
+        min-height: 280px;
+        padding: 10px 6px;
     }
 
     .outstanding-chart--donut {
-        min-height: 340px;
-        padding: 32px 26px;
+        min-height: 280px;
+        padding: 18px 12px;
     }
 
     .outstanding-chart--donut svg {
-        max-width: 360px;
+        max-width: 320px;
     }
 }
 
@@ -458,7 +461,7 @@ main {
    ========================================== */
 
 .hero-banner {
-    margin-top: 140px;
+    margin-top: 0;
     position: relative;
     overflow: hidden;
     background: var(--white);
@@ -607,7 +610,7 @@ main {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 28px;
-    margin-bottom: 32px;
+    margin-bottom: 18px;
     align-items: stretch;
     justify-items: stretch;
     grid-auto-rows: minmax(0, 1fr);
@@ -644,12 +647,12 @@ main {
 }
 
 .outstanding-chart {
-    padding: 30px 26px;
+    padding: 10px 6px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 380px;
+    min-height: 340px;
     position: relative;
     width: 100%;
     max-width: 100%;
@@ -657,19 +660,19 @@ main {
 }
 
 .outstanding-chart--donut {
-    min-height: 400px;
-    padding: 38px 32px;
+    min-height: 360px;
+    padding: 18px 12px;
 }
 
 .outstanding-chart--donut svg {
-    max-width: 460px;
+    max-width: 420px;
 }
 
 .outstanding-chart h3 {
     font-size: var(--font-size-large);
     font-weight: 500;
     color: var(--hsbc-black);
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     width: 100%;
     flex-shrink: 0;
 }
@@ -679,7 +682,7 @@ main {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .star-service-text {
@@ -691,7 +694,7 @@ main {
 
 .outstanding-chart svg {
     width: 100%;
-    max-width: 460px;
+    max-width: 420px;
     height: auto;
     display: block;
     flex-shrink: 0;
@@ -1062,8 +1065,8 @@ main {
    ========================================== */
 
 @media (max-width: 968px) {
-    body {
-        padding-top: 140px;
+    main {
+        padding: 110px 40px 0;
     }
 
     /* Hide top navigation bar on mobile */
@@ -1103,10 +1106,26 @@ main {
         background: var(--hsbc-black);
         border-radius: 2px;
         transition: all 0.3s ease;
+        transform-origin: center;
     }
     
     .mobile-menu-toggle:hover span {
         background: var(--white);
+    }
+
+    .mobile-menu-toggle.is-open span:nth-child(1),
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .mobile-menu-toggle.is-open span:nth-child(2),
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-menu-toggle.is-open span:nth-child(3),
+    .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
     }
     
     /* Separator line after hamburger */
@@ -1184,7 +1203,7 @@ main {
     }
 
     .hero-banner {
-        margin-top: 60px;
+        margin-top: 20px;
     }
     
     .hero-banner-wrapper {
@@ -1230,17 +1249,17 @@ main {
 
     .outstanding-chart {
         max-width: 100%;
-        min-height: 320px;
-        padding: 26px 20px;
+        min-height: 260px;
+        padding: 12px 8px;
     }
 
     .outstanding-chart--donut {
-        min-height: 320px;
-        padding: 30px 24px;
+        min-height: 260px;
+        padding: 20px 12px;
     }
 
     .outstanding-chart--donut svg {
-        max-width: 320px;
+        max-width: 280px;
     }
 
     .outstanding-chart svg {
@@ -1294,6 +1313,10 @@ main {
 }
 
 @media (max-width: 640px) {
+    main {
+        padding: 100px 20px 0;
+    }
+
     .hero-banner-main-header {
         font-size: 28px;
     }
@@ -1759,6 +1782,7 @@ body.chat-overlay-open {
     background: var(--hsbc-black);
     border-radius: 2px;
     transition: all 0.3s ease;
+    transform-origin: center;
 }
 
 .mobile-menu-toggle:hover {
@@ -1769,16 +1793,19 @@ body.chat-overlay-open {
     background: var(--white);
 }
 
+.mobile-menu-toggle.is-open span:nth-child(1),
 .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
+    transform: translateY(7px) rotate(45deg);
 }
 
+.mobile-menu-toggle.is-open span:nth-child(2),
 .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
     opacity: 0;
 }
 
+.mobile-menu-toggle.is-open span:nth-child(3),
 .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
+    transform: translateY(-7px) rotate(-45deg);
 }
 
 @media (max-width: 968px) {
