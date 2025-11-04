@@ -1,27 +1,29 @@
 "use strict";
-function resolveBackendBaseUrl() {
-    if (window.DISPUTE_BACKEND_URL) {
-        return window.DISPUTE_BACKEND_URL;
+// Access Socket.IO client via window to avoid ambient redeclarations
+const resolveBackendBaseUrl = () => {
+    const configured = window.DISPUTE_BACKEND_URL;
+    if (configured) {
+        return configured;
     }
-    var origin = window.location.origin;
-    var isLocalFrontend = /localhost:8080|127\.0\.0\.1:8080/i.test(origin);
-    var fallback = isLocalFrontend ? 'http://localhost:5000' : origin;
+    const origin = window.location.origin;
+    const isLocalFrontend = /localhost:8080|127\.0\.0\.1:8080/i.test(origin);
+    const fallback = isLocalFrontend ? 'http://localhost:5000' : origin;
     return fallback.replace(/\/$/, '');
-}
-function resolveSocketBaseUrl() {
-    var configured = window.DISPUTE_SOCKET_URL;
+};
+const resolveSocketBaseUrl = () => {
+    const configured = window.DISPUTE_SOCKET_URL;
     if (configured) {
         return configured.replace(/\/$/, '');
     }
     return resolveBackendBaseUrl();
-}
-function resolveApiBaseUrl() {
-    if (window.DISPUTE_API_BASE_URL) {
-        return window.DISPUTE_API_BASE_URL;
+};
+const resolveApiBaseUrl = () => {
+    const configured = window.DISPUTE_API_BASE_URL;
+    if (configured) {
+        return configured;
     }
-    return resolveBackendBaseUrl() + '/api';
-}
-// Access Socket.IO client via window to avoid ambient redeclarations
+    return `${resolveBackendBaseUrl()}/api`;
+};
 // Main App Class
 class DisputePortalApp {
     constructor() {
@@ -129,7 +131,7 @@ class DisputePortalApp {
         // Initialize socket connection
         try {
             // Prefer long-polling to avoid environments that block WebSocket upgrades
-            var socketBase = resolveSocketBaseUrl();
+            const socketBase = resolveSocketBaseUrl();
             this.socket = window.io(socketBase, {
                 transports: ['polling'],
                 upgrade: false,
@@ -379,7 +381,7 @@ class DisputePortalApp {
             const anyWindow = window;
             if (!anyWindow.api || typeof anyWindow.api.submitDispute !== 'function') {
                 console.warn('API client not available. Falling back to direct fetch.');
-                const resp = await fetch(resolveApiBaseUrl() + '/disputes', {
+                const resp = await fetch(`${resolveApiBaseUrl()}/disputes`, {
                     method: 'POST',
                     body: formData
                 });

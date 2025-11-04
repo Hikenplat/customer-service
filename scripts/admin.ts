@@ -1,3 +1,5 @@
+export {};
+
 /* Admin Dashboard Script - uses window.api from scripts/api-client.js */
 // Access Socket.IO client via window to avoid ambient redeclarations
 
@@ -52,6 +54,30 @@ document.addEventListener('DOMContentLoaded', () => {
     t.innerHTML = `<div class="card" style="min-width:280px;">${msg}</div>`;
     (t as HTMLElement).style.display = 'block';
     setTimeout(() => { (t as HTMLElement).style.display = 'none'; }, 4000);
+  };
+
+  const runWithButtonState = async (
+    button: HTMLButtonElement | null,
+    loadingLabel: string,
+    action: () => Promise<void>
+  ): Promise<void> => {
+    if (!button) {
+      await action();
+      return;
+    }
+
+    const originalLabel = button.textContent ?? '';
+    button.disabled = true;
+    button.setAttribute('data-loading', 'true');
+    button.textContent = loadingLabel;
+
+    try {
+      await action();
+    } finally {
+      button.disabled = false;
+      button.removeAttribute('data-loading');
+      button.textContent = originalLabel;
+    }
   };
 
   const formatBytes = (bytes?: number | null) => {
@@ -175,6 +201,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const tplSubject = byId('tplSubject') as HTMLInputElement;
   const tplBody = byId('tplBody') as HTMLTextAreaElement;
 
+  const emailConfigStatus = byId('emailConfigStatus');
+  const emailConfigProvider = byId('emailConfigProvider');
+  const emailConfigFrom = byId('emailConfigFrom');
+  const emailConfigHost = byId('emailConfigHost');
+  const emailConfigSecure = byId('emailConfigSecure');
+  const emailConfigError = byId('emailConfigError');
+  const emailConfigLastChecked = byId('emailConfigLastChecked');
+  const testEmailConnectionBtn = byId('testEmailConnection') as HTMLButtonElement | null;
+  const testEmailForm = byId('testEmailForm') as HTMLFormElement | null;
+  const testEmailRecipient = byId('testEmailRecipient') as HTMLInputElement | null;
+  const sendTestEmailBtn = byId('sendTestEmailBtn') as HTMLButtonElement | null;
+
   // Threads
   const threadsSearch = byId('threadsSearch') as HTMLInputElement;
   const refreshThreads = byId('refreshThreads') as HTMLButtonElement;
@@ -211,7 +249,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tabPanels.forEach(p => setHidden(p, p.id !== panelId));
     // On switch, refresh that tab
     if (panelId === 'disputesTab') loadDisputes();
-    if (panelId === 'emailsTab') loadTemplates();
+    if (panelId === 'emailsTab') {
+      loadTemplates();
+      loadEmailConfig();
+    }
     if (panelId === 'threadsTab') loadThreads();
     if (panelId === 'chatTab') loadChats();
     if (panelId === 'statsTab') loadStats();
@@ -561,6 +602,90 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setTimeout(() => loadDisputes(), 300);
   });
 
+  const hideEmailConfigError = () => {
+    if (!emailConfigError) return;
+    emailConfigError.textContent = '';
+    emailConfigError.style.display = 'none';
+    emailConfigError.style.removeProperty('color');
+  };
+
+  const showEmailConfigError = (message: string) => {
+    if (!emailConfigError) return;
+    emailConfigError.textContent = message;
+    emailConfigError.style.display = 'block';
+    emailConfigError.style.color = '#b91c1c';
+  };
+
+  const applyEmailConfigDetails = (payload: any) => {
+    const provider = payload?.provider as string | undefined;
+    const config = payload?.config as Record<string, unknown> | undefined;
+
+    if (emailConfigProvider) {
+      emailConfigProvider.textContent = provider ? provider.toUpperCase() : 'Unknown';
+    }
+
+    if (emailConfigFrom) {
+      emailConfigFrom.textContent = (config?.from as string) || '—';
+    }
+
+    if (emailConfigHost) {
+      const host = (config?.host as string) || '';
+      const port = config?.port as number | undefined;
+      emailConfigHost.textContent = host ? (port ? `${host}:${port}` : host) : '—';
+    }
+
+    if (emailConfigSecure) {
+      const secure = config?.secure as boolean | undefined;
+      if (secure === true) {
+        emailConfigSecure.textContent = 'TLS/SSL';
+      } else if (secure === false) {
+        emailConfigSecure.textContent = 'STARTTLS';
+      } else {
+        emailConfigSecure.textContent = 'Not set';
+      }
+    }
+  };
+
+  const loadEmailConfig = async () => {
+    if (!emailConfigStatus) return;
+
+    emailConfigStatus.textContent = 'Checking configuration…';
+    hideEmailConfigError();
+
+    try {
+      const result = await api.getEmailConfigStatus();
+
+      if (!result?.success) {
+        emailConfigStatus.textContent = 'Unable to load configuration.';
+        showEmailConfigError(result?.error || 'Request failed');
+        if (emailConfigLastChecked) {
+          emailConfigLastChecked.textContent = '';
+          emailConfigLastChecked.style.display = 'none';
+        }
+        return;
+      }
+
+      const configured = Boolean(result.data?.configured);
+      emailConfigStatus.textContent = configured
+        ? 'Email service is connected and ready.'
+        : 'Email service is not fully configured yet.';
+
+      applyEmailConfigDetails(result.data);
+
+      if (emailConfigLastChecked) {
+        emailConfigLastChecked.textContent = `Last checked ${new Date().toLocaleString()}`;
+        emailConfigLastChecked.style.display = 'block';
+      }
+    } catch (error: any) {
+      emailConfigStatus.textContent = 'Unable to load configuration.';
+      showEmailConfigError(error?.message || 'Request failed');
+      if (emailConfigLastChecked) {
+        emailConfigLastChecked.textContent = '';
+        emailConfigLastChecked.style.display = 'none';
+      }
+    }
+  };
+
   // Templates
   const renderTemplates = (items: EmailTemplate[]) => {
     templatesList.innerHTML = '';
@@ -624,6 +749,62 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       alert('Failed to save template');
     }
+  });
+
+  testEmailConnectionBtn?.addEventListener('click', async () => {
+    await runWithButtonState(testEmailConnectionBtn, 'Testing…', async () => {
+      try {
+        const result = await api.testEmailConnection();
+        if (result?.success) {
+          showToast(result.message || 'Connection successful');
+          hideEmailConfigError();
+        } else {
+          const message = result?.message || 'Connection failed';
+          showToast(message);
+          showEmailConfigError(message);
+        }
+      } catch (error: any) {
+        const message = error?.message || 'Connection failed';
+        showToast(message);
+        showEmailConfigError(message);
+      }
+    });
+
+    await loadEmailConfig();
+  });
+
+  testEmailForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const recipient = testEmailRecipient?.value.trim();
+    if (!recipient) {
+      showEmailConfigError('Enter a recipient email address before sending a test message.');
+      return;
+    }
+
+    hideEmailConfigError();
+
+    await runWithButtonState(sendTestEmailBtn, 'Sending…', async () => {
+      try {
+        const result = await api.sendEmailTest(recipient);
+        if (result?.success) {
+          showToast(result.message || `Test email sent to ${recipient}`);
+          if (testEmailRecipient) {
+            testEmailRecipient.value = '';
+          }
+        } else {
+          const message = result?.message || 'Failed to send test email';
+          showToast(message);
+          showEmailConfigError(message);
+        }
+      } catch (error: any) {
+        const message = error?.message || 'Failed to send test email';
+        showToast(message);
+        showEmailConfigError(message);
+      }
+    });
+
+    await loadEmailConfig();
   });
 
   // Threads

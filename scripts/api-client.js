@@ -159,6 +159,23 @@ class DisputeAPI {
     });
   }
 
+  async getEmailConfigStatus() {
+    return this.request('/email/config/status');
+  }
+
+  async testEmailConnection() {
+    return this.request('/email/config/test-connection', {
+      method: 'POST'
+    });
+  }
+
+  async sendEmailTest(to) {
+    return this.request('/email/config/test-send', {
+      method: 'POST',
+      body: JSON.stringify({ to })
+    });
+  }
+
   // Email Thread Methods
   async getEmailThreads(filters = {}) {
     const params = new URLSearchParams(filters);

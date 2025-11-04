@@ -49,6 +49,15 @@
     th { background: #f8fafc; font-weight: 600; }
     .form-row { display: flex; gap: .75rem; flex-wrap: wrap; }
     .form-row > * { flex: 1 1 250px; }
+    .email-config-card { background: #f9fafb; margin-bottom: 1rem; }
+    .email-config-layout { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: flex-start; }
+    .email-config-layout h3 { margin-bottom: 0.35rem; }
+    .email-config-last-checked { font-size: 0.85rem; display: none; }
+    .email-config-meta { min-width: 220px; font-size: 0.9rem; }
+    .email-config-actions { margin-top: 0.75rem; gap: 0.75rem; align-items: flex-end; }
+    .email-config-test-form { flex: 1; gap: 0.5rem; }
+    .email-config-error { display: none; margin-top: 0.5rem; }
+    .sr-only { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
   .right { display: flex; justify-content: flex-end; gap: .5rem; }
   .admin-toast { position: fixed; right: 1rem; bottom: 1rem; display: none; z-index: 9999; }
   </style>
@@ -365,6 +374,31 @@
 
       <!-- Email Templates Tab -->
       <div id="emailsTab" class="card hidden">
+        <div id="emailConfigPanel" class="card email-config-card">
+          <div class="email-config-layout">
+            <div>
+              <h3>Email Service</h3>
+              <p id="emailConfigStatus" class="muted">Checking configuration…</p>
+              <p id="emailConfigLastChecked" class="muted email-config-last-checked"></p>
+            </div>
+            <div class="email-config-meta">
+              <p><strong>Provider:</strong> <span id="emailConfigProvider">-</span></p>
+              <p><strong>From:</strong> <span id="emailConfigFrom">-</span></p>
+              <p><strong>SMTP Host:</strong> <span id="emailConfigHost">-</span></p>
+              <p><strong>Security:</strong> <span id="emailConfigSecure">-</span></p>
+            </div>
+          </div>
+          <div class="form-row email-config-actions">
+            <button type="button" id="testEmailConnection" class="btn btn-secondary">Test Connection</button>
+            <form id="testEmailForm" class="form-row email-config-test-form">
+              <label for="testEmailRecipient" class="sr-only">Test email recipient</label>
+              <input type="email" id="testEmailRecipient" placeholder="test@recipient.com" required autocomplete="email" />
+              <button type="submit" class="btn btn-primary" id="sendTestEmailBtn">Send Test Email</button>
+            </form>
+          </div>
+          <p id="emailConfigError" class="muted email-config-error"></p>
+        </div>
+
         <h3>Templates</h3>
         <div id="templatesList"></div>
         <hr />
