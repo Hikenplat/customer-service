@@ -4,7 +4,19 @@
   }
   window.__disputePortalFloatingChatInitialized = true;
 
-  const SOCKET_URL = window.CHAT_SOCKET_URL || 'http://localhost:5000';
+  function resolveSocketUrl() {
+    var preferred = window.CHAT_SOCKET_URL || window.DISPUTE_SOCKET_URL;
+    if (preferred) {
+      return preferred.replace(/\/$/, '');
+    }
+
+    var origin = window.location.origin;
+    var isLocalFrontend = /localhost:8080|127\.0\.0\.1:8080/i.test(origin);
+    var fallback = isLocalFrontend ? 'http://localhost:5000' : origin;
+    return fallback.replace(/\/$/, '');
+  }
+
+  const SOCKET_URL = resolveSocketUrl();
   let sessionManager = null;
   let socket = null;
   let overlay = null;
@@ -22,6 +34,7 @@
   let closeButton = null;
   let floatingButton = null;
   let chatPrompt = null;
+  let externalTriggers = [];
 
   document.addEventListener('DOMContentLoaded', initializeFloatingChat);
 
@@ -36,6 +49,7 @@
 
     ensureOverlay();
     attachFloatingButton();
+    registerChatTriggers();
     attachOverlayListeners();
     prefillWelcomeForm();
     attachSocket();
@@ -113,6 +127,31 @@
     });
   }
 
+  function registerChatTriggers() {
+    externalTriggers = Array.prototype.slice.call(
+      document.querySelectorAll('[data-chat-trigger]')
+    );
+
+    if (!externalTriggers.length) {
+      return;
+    }
+
+    externalTriggers.forEach((trigger) => {
+      if (trigger.__disputePortalChatBound) {
+        return;
+      }
+
+      trigger.addEventListener('click', (event) => {
+        if (event) {
+          event.preventDefault();
+        }
+        openOverlay();
+      });
+
+      trigger.__disputePortalChatBound = true;
+    });
+  }
+
   function attachOverlayListeners() {
     closeButton?.addEventListener('click', closeOverlay);
     backdrop?.addEventListener('click', closeOverlay);
@@ -158,7 +197,12 @@
 
   function attachSocket() {
     socket = sessionManager.connectSocket(SOCKET_URL);
-    if (!socket || socket.__disputePortalChatOverlayBound) {
+    if (!socket) {
+      console.warn('Chat overlay could not connect to Socket.IO – running without live updates');
+      return;
+    }
+
+    if (socket.__disputePortalChatOverlayBound) {
       return;
     }
 
@@ -390,5 +434,24 @@
     } catch (error) {
       return '';
     }
+  }
+
+  if (!window.openDisputePortalChat) {
+    window.openDisputePortalChat = function () {
+      if (!sessionManager || !floatingButton) {
+        initializeFloatingChat();
+      }
+
+      if (!sessionManager) {
+        console.warn('Chat session manager is not ready yet.');
+        return;
+      }
+
+      if (!overlay) {
+        ensureOverlay();
+      }
+
+      openOverlay();
+    };
   }
 })();

@@ -23,6 +23,36 @@ interface ChatMessage {
 
 // Access Socket.IO client via window to avoid ambient redeclarations
 
+const resolveBackendBaseUrl = (): string => {
+    const configured = (window as any).DISPUTE_BACKEND_URL as string | undefined;
+    if (configured) {
+        return configured;
+    }
+
+    const origin = window.location.origin;
+    const isLocalFrontend = /localhost:8080|127\.0\.0\.1:8080/i.test(origin);
+    const fallback = isLocalFrontend ? 'http://localhost:5000' : origin;
+    return fallback.replace(/\/$/, '');
+};
+
+const resolveSocketBaseUrl = (): string => {
+    const configured = (window as any).DISPUTE_SOCKET_URL as string | undefined;
+    if (configured) {
+        return configured.replace(/\/$/, '');
+    }
+
+    return resolveBackendBaseUrl();
+};
+
+const resolveApiBaseUrl = (): string => {
+    const configured = (window as any).DISPUTE_API_BASE_URL as string | undefined;
+    if (configured) {
+        return configured;
+    }
+
+    return `${resolveBackendBaseUrl()}/api`;
+};
+
 // Main App Class
 class DisputePortalApp {
     private form: HTMLFormElement;
@@ -150,7 +180,8 @@ class DisputePortalApp {
         // Initialize socket connection
         try {
             // Prefer long-polling to avoid environments that block WebSocket upgrades
-            this.socket = (window as any).io('http://localhost:5000', {
+            const socketBase = resolveSocketBaseUrl();
+            this.socket = (window as any).io(socketBase, {
                 transports: ['polling'],
                 upgrade: false,
                 withCredentials: true,
@@ -427,7 +458,7 @@ class DisputePortalApp {
             const anyWindow = window as any;
             if (!anyWindow.api || typeof anyWindow.api.submitDispute !== 'function') {
                 console.warn('API client not available. Falling back to direct fetch.');
-                const resp = await fetch('http://localhost:5000/api/disputes', {
+                const resp = await fetch(`${resolveApiBaseUrl()}/disputes`, {
                     method: 'POST',
                     body: formData
                 });

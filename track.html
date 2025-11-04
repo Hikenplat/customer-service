@@ -446,15 +446,14 @@
         </button>
     </div>
 
-    <!-- Header authentication helper -->
+    <!-- Environment configuration -->
+    <script src="scripts/env-config.js"></script>
     <script src="scripts/api-client.js?v=20251029-1"></script>
-    <!-- Socket.IO client from backend server -->
-    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
-        <!-- Chat Session Manager -->
-        <script src="scripts/chatSession.js"></script>
-        <script src="scripts/chatPanel.js"></script>
-        <script src="scripts/headerAuth.js"></script>
-        <script src="scripts/home.js"></script>
+    <!-- Chat Session Manager -->
+    <script src="scripts/chatSession.js"></script>
+    <script src="scripts/chatPanel.js"></script>
+    <script src="scripts/headerAuth.js"></script>
+    <script src="scripts/home.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const trackForm = document.getElementById('trackForm');
@@ -462,6 +461,8 @@
             const errorMessage = document.getElementById('errorMessage');
             const trackResult = document.getElementById('trackResult');
             const trackAgainBtn = document.getElementById('trackAgainBtn');
+
+            const apiBase = window.DISPUTE_API_BASE_URL || (window.location.origin.replace(/\/$/, '') + '/api');
 
             trackForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -476,7 +477,7 @@
                 loading.style.display = 'block';
 
                 try {
-                    const response = await fetch('http://localhost:5000/api/disputes/track', {
+                    const response = await fetch(apiBase + '/disputes/track', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

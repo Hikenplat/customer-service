@@ -1,6 +1,34 @@
 /* Admin Dashboard Script - uses window.api from scripts/api-client.js */
 // Access Socket.IO client via window to avoid ambient redeclarations
 
+const resolveBackendBaseUrl = (): string => {
+  const configured = (window as any).DISPUTE_BACKEND_URL;
+  if (configured) {
+    return configured;
+  }
+
+  const origin = window.location.origin;
+  const isLocalFrontend = /localhost:8080|127\.0\.0\.1:8080/i.test(origin);
+  const fallback = isLocalFrontend ? 'http://localhost:5000' : origin;
+  return fallback.replace(/\/$/, '');
+};
+
+const resolveSocketBaseUrl = (): string => {
+  const configured = (window as any).DISPUTE_SOCKET_URL;
+  if (configured) {
+    return configured.replace(/\/$/, '');
+  }
+  return resolveBackendBaseUrl();
+};
+
+const resolveApiBaseUrl = (): string => {
+  const configured = (window as any).DISPUTE_API_BASE_URL;
+  if (configured) {
+    return configured;
+  }
+  return `${resolveBackendBaseUrl()}/api`;
+};
+
 type Dispute = {
   id: string;
   referenceNumber?: string;
@@ -206,7 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Connect socket for admin notifications
         try {
           // Use long-polling to avoid websocket upgrade issues in restricted environments
-          adminSocket = (window as any).io('http://localhost:5000', {
+          const socketBase = resolveSocketBaseUrl();
+          adminSocket = (window as any).io(socketBase, {
             transports: ['polling'],
             upgrade: false,
             withCredentials: true,
@@ -666,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
       emailThreadDetail.classList.remove('hidden');
       
       // Fetch thread with messages
-      const response = await fetch(`http://localhost:5000/api/email/threads/${threadId}`, {
+  const response = await fetch(`${resolveApiBaseUrl()}/email/threads/${threadId}`, {
         headers: {
           'Authorization': `Bearer ${api.token}`
         }
@@ -792,7 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!selectedThreadId) return;
       
       try {
-        const response = await fetch(`http://localhost:5000/api/email/threads/${selectedThreadId}`, {
+  const response = await fetch(`${resolveApiBaseUrl()}/email/threads/${selectedThreadId}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -830,7 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       try {
         // Get thread details to get customer email
-        const threadResponse = await fetch(`http://localhost:5000/api/email/threads/${selectedThreadId}`, {
+  const threadResponse = await fetch(`${resolveApiBaseUrl()}/email/threads/${selectedThreadId}`, {
           headers: {
             'Authorization': `Bearer ${api.token}`
           }
@@ -841,7 +870,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const thread = threadResult.data;
         
         // Send email
-        const response = await fetch('http://localhost:5000/api/email/send', {
+  const response = await fetch(`${resolveApiBaseUrl()}/email/send`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

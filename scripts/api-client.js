@@ -1,6 +1,22 @@
 // API Configuration
-const API_URL = 'http://localhost:5000/api';
-const SOCKET_URL = 'http://localhost:5000';
+function resolveBackendBase() {
+  if (window.DISPUTE_BACKEND_URL) {
+    return window.DISPUTE_BACKEND_URL;
+  }
+
+  const origin = window.location.origin;
+  const isLocalFrontend = /localhost:8080|127\.0\.0\.1:8080/i.test(origin);
+  const base = isLocalFrontend ? 'http://localhost:5000' : origin;
+  return base.replace(/\/$/, '');
+}
+
+const BACKEND_BASE_URL = resolveBackendBase();
+const API_URL = window.DISPUTE_API_BASE_URL || `${BACKEND_BASE_URL}/api`;
+const SOCKET_URL = window.DISPUTE_SOCKET_URL || BACKEND_BASE_URL;
+
+window.DISPUTE_BACKEND_URL = BACKEND_BASE_URL;
+window.DISPUTE_API_BASE_URL = API_URL;
+window.DISPUTE_SOCKET_URL = SOCKET_URL;
 
 // API Client Class
 class DisputeAPI {

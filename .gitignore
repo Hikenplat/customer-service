@@ -65,6 +65,7 @@ scripts/*.d.ts
 !scripts/api-client.js
 !scripts/login.js
 !scripts/register.js
+!scripts/env-config.js
 
 # ============ IDE & EDITOR ============
 # VS Code
