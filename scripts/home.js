@@ -6,9 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Smooth scroll for anchor links
     initSmoothScroll();
     
-    // Mobile menu toggle (if needed)
-    initMobileMenu();
-    
     // Animate elements on scroll
     initScrollAnimations();
     
@@ -48,67 +45,6 @@ function initSmoothScroll() {
             }
         });
     });
-}
-
-/**
- * Initialize mobile menu functionality
- */
-function initMobileMenu() {
-    const menuButton = document.querySelector('.mobile-menu-toggle');
-    const nav = document.querySelector('.header-main-navigation');
-    
-    if (menuButton && nav) {
-        const closeMenu = () => {
-            nav.classList.remove('active');
-            menuButton.setAttribute('aria-expanded', 'false');
-            menuButton.classList.remove('is-open');
-        };
-
-        const openMenu = () => {
-            nav.classList.add('active');
-            menuButton.setAttribute('aria-expanded', 'true');
-            menuButton.classList.add('is-open');
-        };
-
-        const toggleMenu = (event) => {
-            event.stopPropagation();
-            const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
-            if (isExpanded) {
-                closeMenu();
-            } else {
-                openMenu();
-            }
-        };
-
-        menuButton.addEventListener('click', toggleMenu);
-
-        // Keep menu open while interacting with nav content
-        nav.addEventListener('click', (event) => {
-            event.stopPropagation();
-        });
-
-        // Close menu when clicking a link (hamburger remains visible)
-        const navLinks = nav.querySelectorAll('a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                closeMenu();
-            });
-        });
-
-        // Close menu when clicking outside the nav/button
-        document.addEventListener('click', (event) => {
-            if (!nav.contains(event.target) && !menuButton.contains(event.target)) {
-                closeMenu();
-            }
-        });
-
-        // Provide escape key support
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                closeMenu();
-            }
-        });
-    }
 }
 
 /**

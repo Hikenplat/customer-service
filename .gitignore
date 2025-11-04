@@ -67,6 +67,7 @@ scripts/*.d.ts
 !scripts/app.js
 !scripts/chatPanel.js
 !scripts/chatSession.js
+!scripts/headerNav.js
 !scripts/headerAuth.js
 !scripts/home.js
 !scripts/login.js

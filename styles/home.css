@@ -870,6 +870,15 @@ main {
     font-weight: 500;
 }
 
+.process-cta {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.process-cta .btn {
+    min-width: 220px;
+}
+
 /* ==========================================
    Trust Section
    ========================================== */
@@ -1266,6 +1275,14 @@ main {
         max-width: 100%;
     }
 
+    .outstanding-grid-item--image {
+        max-height: 240px;
+    }
+
+    .outstanding-grid-item--image img {
+        height: auto;
+    }
+
     .outstanding-description {
         padding: 30px 20px;
     }
@@ -1336,6 +1353,10 @@ main {
 
     .quick-links-grid {
         grid-template-columns: 1fr;
+    }
+
+    .outstanding-grid-item--image {
+        max-height: 200px;
     }
 
     .trust-grid {
