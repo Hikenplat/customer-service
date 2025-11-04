@@ -63,6 +63,12 @@ build/
 scripts/*.js
 scripts/*.d.ts
 !scripts/api-client.js
+!scripts/admin.js
+!scripts/app.js
+!scripts/chatPanel.js
+!scripts/chatSession.js
+!scripts/headerAuth.js
+!scripts/home.js
 !scripts/login.js
 !scripts/register.js
 !scripts/env-config.js
