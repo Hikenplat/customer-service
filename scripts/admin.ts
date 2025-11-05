@@ -1,5 +1,4 @@
-export {};
-
+(() => {
 /* Admin Dashboard Script - uses window.api from scripts/api-client.js */
 // Access Socket.IO client via window to avoid ambient redeclarations
 
@@ -181,6 +180,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginError = byId('loginError')!;
   const logoutBtn = byId('logoutBtn') as HTMLButtonElement;
   const userBadge = byId('userBadge')!;
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .getRegistrations()
+      .then(regs => regs.forEach(reg => reg.unregister()))
+      .catch(() => undefined);
+  }
+
+  window.addEventListener('error', (event) => {
+    console.error('Admin page error:', event.message, 'at', `${event.filename}:${event.lineno}:${event.colno}`);
+
+    if (loginError && event?.message) {
+      loginError.textContent = `Error: ${event.message}${event.filename ? ` (${event.filename})` : ''}`;
+      loginError.style.display = 'block';
+      loginError.style.color = '#b91c1c';
+    }
+  });
 
   // Tabs
   const tabs = qsa('.tab-btn');
@@ -1236,3 +1252,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // boot
   init();
 });
+})();
